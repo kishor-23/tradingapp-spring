@@ -2,8 +2,10 @@ package com.chainsys.tradingapp.dao;
 
 import java.util.List;
 
-import com.chainsys.tradingapp.model.Stock;
+import org.springframework.stereotype.Repository;
 
+import com.chainsys.tradingapp.model.Stock;
+@Repository
 public interface StockDAO {
     List<Stock> selectAllStocks();
     Stock getStockDetailsById(int id);

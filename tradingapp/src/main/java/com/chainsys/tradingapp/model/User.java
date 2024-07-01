@@ -1,11 +1,16 @@
 package com.chainsys.tradingapp.model;
 
-import java.sql.Blob;
 import java.sql.Date;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+
+
+import org.springframework.web.multipart.MultipartFile;
+
+
 
 @Data
 @NoArgsConstructor
@@ -18,6 +23,6 @@ public class User {
     private String phone;
     private Date dob;
     private String password;
-    private Blob profilePicture;
+    private MultipartFile profilePicture; 
     private double balance;
 }
