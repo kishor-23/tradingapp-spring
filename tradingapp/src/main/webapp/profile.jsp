@@ -3,10 +3,12 @@
 <%@ page import="java.util.List"%>
 <%@ page import="com.chainsys.tradingapp.model.*"%>
 <%@ page import="com.chainsys.tradingapp.dao.*"%>
+<%@ page import="com.chainsys.tradingapp.dao.impl.*"%>
+
 <%@ page import="java.math.BigDecimal"%>
 
 
-<%@ page import="javax.servlet.http.HttpSession"%>
+<%@ page import="jakarta.servlet.http.HttpSession"%>
 <%
 if (session == null || session.getAttribute("user") == null) {
 	response.sendRedirect("login.jsp");

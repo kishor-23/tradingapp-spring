@@ -30,15 +30,12 @@ import com.chainsys.tradingapp.model.User;
 import com.chainsys.tradingapp.util.PasswordHashing;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import jakarta.servlet.http.Part;
-
-
-
 
 @Controller
 public class UserController {
-    private UserDAO userOperations;
+    private final UserDAO userOperations;
 
     @Autowired
     public UserController(UserImpl userImpl) {
@@ -52,7 +49,7 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public String registerUser(@ModelAttribute User user, @RequestParam("profilePicture") MultipartFile filePart, HttpServletRequest request, Model model) throws IOException, SQLException {
+    public String registerUser(@ModelAttribute User user, @RequestParam("profile") MultipartFile filePart, HttpServletRequest request, Model model) throws IOException, SQLException {
         // Extract user details from the form
         String dobString = request.getParameter("dob");
         Date dob = null;
@@ -83,28 +80,25 @@ public class UserController {
         user.setDob(dob);
         user.setPassword(hashedPassword);
         user.setBalance(balance);
+        user.setProfilePicture(profilePicture); // set the profile picture blob
 
         boolean userExists = userOperations.checkUserAlreadyExists(user.getEmail());
         if (!userExists) {
             userOperations.addUser(user);
-
-            // Send email notification
-            // String body = "Dear " + user.getUsername() + ",\n\nYour account has been created successfully.\n\nBest Regards,\nTeam";
-            // EmailUtility.sendEmail(user.getEmail(), body, user.getUsername());
-
             return "redirect:/login?registered=true";
         } else {
             model.addAttribute("errorMessage", "Registration failed. User already exists. Please login.");
             return "register.jsp";
         }
     }
+
     @GetMapping("/login")
     public String showLoginForm() {
         return "login.jsp";
     }
 
     @PostMapping("/login")
-    public String loginUser(@RequestParam String email, @RequestParam String password, HttpSession session, Model model) {
+    public String loginUser(@RequestParam String email, @RequestParam String password, HttpSession session, Model model) throws ClassNotFoundException {
         try {
             User user = userOperations.getUserByEmail(email);
             if (user != null && PasswordHashing.checkPassword(password, user.getPassword())) {
@@ -114,10 +108,44 @@ public class UserController {
                 model.addAttribute("msg", "Invalid email or password");
                 return "login.jsp";
             }
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
             model.addAttribute("msg", "An error occurred. Please try again later.");
             return "login.jsp";
+        }
+    }
+
+    @PostMapping("/profilePicture")
+    public String updateProfilePicture(@RequestParam("userId") int userId, @RequestParam("profilePicture") MultipartFile filePart, HttpServletResponse response) throws SQLException {
+        Blob profilePicture = null;
+        if (filePart != null && !filePart.isEmpty()) {
+            try (InputStream inputStream = filePart.getInputStream()) {
+                profilePicture = new SerialBlob(inputStream.readAllBytes());
+            } catch (SerialException | IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        userOperations.updateUserProfilePicture(userId, profilePicture);
+        return "redirect:/profile"; // Adjust the redirect URL as needed
+    }
+
+    @GetMapping("/profilePicture")
+    public void getProfilePicture(@RequestParam("userId") int userId, HttpServletResponse response) {
+        try {
+            Blob profilePicture = userOperations.getUserProfilePicture(userId);
+            if (profilePicture != null) {
+                try (InputStream inputStream = profilePicture.getBinaryStream()) {
+                    response.setContentType("image/jpeg");
+                    byte[] buffer = new byte[8192];
+                    int bytesRead;
+                    while ((bytesRead = inputStream.read(buffer)) != -1) {
+                        response.getOutputStream().write(buffer, 0, bytesRead);
+                    }
+                }
+            }
+        } catch (SQLException | IOException e) {
+            e.printStackTrace();
         }
     }
 }

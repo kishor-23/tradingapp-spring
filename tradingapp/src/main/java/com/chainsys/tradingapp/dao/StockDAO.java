@@ -7,8 +7,9 @@ import org.springframework.stereotype.Repository;
 import com.chainsys.tradingapp.model.Stock;
 @Repository
 public interface StockDAO {
-    List<Stock> selectAllStocks();
-    Stock getStockDetailsById(int id);
-    int buyStock(int userId, int stockId, int quantity, double price) ;
-    int sellStock(int userId, int stockId, int quantity, double price) ;
+  public  List<Stock> selectAllStocks();
+  public  Stock getStockDetailsById(int id);
+  public  double stockPriceById(int stockId);
+  public  int buyStock(int userId, int stockId, int quantity, double price) ;
+  public  int sellStock(int userId, int stockId, int quantity, double price) ;
 }

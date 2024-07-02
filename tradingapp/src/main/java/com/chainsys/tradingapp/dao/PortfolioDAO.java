@@ -8,6 +8,6 @@ import com.chainsys.tradingapp.model.Portfolio;
 @Repository
 public interface PortfolioDAO {
 	 
-    Portfolio getPortfolioById(int portfolioId);
-    List<Portfolio> getPortfoliosByUserId(int userId);
+  public  Portfolio getPortfolioById(int portfolioId);
+  public  List<Portfolio> getPortfoliosByUserId(int userId);
 }

@@ -18,7 +18,7 @@ public class UserRowMapper implements RowMapper<User> {
           user.setPancardno(rs.getString("pancardno"));
           user.setPhone(rs.getString("phone"));
           user.setDob(rs.getDate("dob"));
-          user.setProfilePicture((MultipartFile) rs.getBlob("profilePicture"));
+          user.setProfilePicture(rs.getBlob("profilePicture"));
           user.setBalance(rs.getDouble("balance"));
           user.setPassword(rs.getString("password"));
           return user;

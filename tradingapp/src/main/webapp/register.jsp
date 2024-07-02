@@ -69,7 +69,7 @@
                     
                 </label>
                 <div id="file-name">No file chosen</div>
-                <input id="file-upload" type="file" name="profilePicture" accept="image/*" />
+                <input id="file-upload" type="file" name="profile" accept="image/*" />
     
        
      

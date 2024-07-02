@@ -7,9 +7,9 @@ import org.springframework.stereotype.Repository;
 import com.chainsys.tradingapp.model.Nominee;
 @Repository
 public interface NomineeDAO {
-	void addNominee(Nominee nominee) ;
-    Nominee getNomineeById(int nomineeId) ;
-    List<Nominee> getAllNomineesByUserId(int userId) ;
-    void updateNominee(Nominee nominee) ;
-    void deleteNominee(int nomineeId) ;
+	public void addNominee(Nominee nominee) ;
+    public  Nominee getNomineeById(int nomineeId) ;
+    public List<Nominee> getAllNomineesByUserId(int userId) ;
+    public void updateNominee(Nominee nominee) ;
+    public void deleteNominee(int nomineeId) ;
 }
