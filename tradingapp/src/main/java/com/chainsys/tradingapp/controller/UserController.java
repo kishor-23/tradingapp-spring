@@ -41,6 +41,10 @@ public class UserController {
     public UserController(UserImpl userImpl) {
         this.userOperations = userImpl;
     }
+    @GetMapping("/profile")
+    public String profile() {
+    	return "profile.jsp";
+    }
 
     @GetMapping("/register")
     public String showRegisterForm(Model model) {
@@ -103,7 +107,7 @@ public class UserController {
             User user = userOperations.getUserByEmail(email);
             if (user != null && PasswordHashing.checkPassword(password, user.getPassword())) {
                 session.setAttribute("user", user);
-                return "home.jsp";
+                return "redirect:/profile";
             } else {
                 model.addAttribute("msg", "Invalid email or password");
                 return "login.jsp";
@@ -113,6 +117,29 @@ public class UserController {
             model.addAttribute("msg", "An error occurred. Please try again later.");
             return "login.jsp";
         }
+    }
+    @PostMapping("/addMoney")
+    public String addMoney(HttpServletRequest request, HttpSession session, Model model) throws ClassNotFoundException {
+        int userId = Integer.parseInt(request.getParameter("userId"));
+        double amount = Double.parseDouble(request.getParameter("amount"));
+
+        try {
+            userOperations.addMoneyToUser(userId, amount);
+            User updatedUser = userOperations.getUserByEmail(((User) session.getAttribute("user")).getEmail());
+            session.setAttribute("user", updatedUser);
+            return "redirect:/profile";
+        } catch (SQLException e) {
+            e.printStackTrace();
+            model.addAttribute("msg", "An error occurred. Please try again later.");
+            return "error.jsp"; 
+        }
+    }
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        if (session != null) {
+            session.invalidate();
+        }
+        return "redirect:/login";
     }
 
     @PostMapping("/profilePicture")
@@ -127,9 +154,9 @@ public class UserController {
         }
 
         userOperations.updateUserProfilePicture(userId, profilePicture);
-        return "redirect:/profile"; // Adjust the redirect URL as needed
+        return "redirect:/profile";
     }
-
+    
     @GetMapping("/profilePicture")
     public void getProfilePicture(@RequestParam("userId") int userId, HttpServletResponse response) {
         try {

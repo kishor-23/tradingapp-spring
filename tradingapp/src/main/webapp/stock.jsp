@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List" %>
-<%@ page import="com.chainsys.model.*" %>
+<%@ page import="com.chainsys.tradingapp.model.*" %>
 <%
     if (session == null || session.getAttribute("user") == null) {
         response.sendRedirect("login.jsp");
@@ -98,27 +98,34 @@ header[data-astro-cid-rafkve5z] {
     <div class="container">
         <div class="row mb-3">
             <div class="col-md-8 filter-buttons text-left">
-                <form method="get" action="StockServlet" id="filterForm">
-                <input type="hidden" name="sortField" id="sortField" value="<%= request.getParameter("sortField") %>">
-<input type="hidden" name="sortOrder" id="sortOrder" value="<%= request.getParameter("sortOrder") %>">
-                
-                    <button type="submit" class="btn btn-primary" name="filterCategory" value="Small">Small Cap</button>
-                    <button type="submit" class="btn btn-warning" name="filterCategory" value="Medium">Medium Cap</button>
-                    <button type="submit" class="btn btn-success" name="filterCategory" value="Large">Large Cap</button>
-                    <button type="submit" class="btn btn-info" name="filterCategory" value="All">All</button>
-                </form>
+             <form method="get" action="/stocks" id="filterForm">
+    <input type="hidden" name="page" value="1">
+    <input type="hidden" name="itemsPerPage" value="${itemsPerPage}">
+    <input type="hidden" name="searchQuery" value="${searchQuery}">
+<input type="hidden" name="sortField" id="sortField" value="${sortField}">
+<input type="hidden" name="sortOrder" id="sortOrder" value="${sortOrder}">
+
+    
+    <button type="submit" class="btn btn-primary" name="filterCategory" value="Small">Small Cap</button>
+    <button type="submit" class="btn btn-warning" name="filterCategory" value="Medium">Medium Cap</button>
+    <button type="submit" class="btn btn-success" name="filterCategory" value="Large">Large Cap</button>
+    <button type="submit" class="btn btn-info" name="filterCategory" value="All">All</button>
+</form>
+
+</form>
             </div>
             <div class="col-md-4 search-bar">
-                <form method="get" action="StockServlet" id="searchForm">
-                    <input type="hidden" name="filterCategory" value="<%= request.getAttribute("filterCategory") %>">
-                    <input type="hidden" name="page" value="1">
-                    
-                    <input type="hidden" name="itemsPerPage" value="<%= request.getAttribute("itemsPerPage") %>">
-                     <input type="hidden" name="sortField" value="<%= request.getParameter("sortField") %>">
-    <input type="hidden" name="sortOrder" value="<%= request.getParameter("sortOrder") %>">
+          <form method="get" action="/stocks" id="searchForm">
+    <input type="hidden" name="page" value="1">
+    <input type="hidden" name="itemsPerPage" value="${itemsPerPage}">
+    <input type="hidden" name="sortField" value="${sortField}">
+    <input type="hidden" name="sortOrder" value="${sortOrder}">
     
-                    <input type="text" class="form-control" id="searchInput" name="searchQuery" value="<%= request.getAttribute("searchQuery") %>" placeholder="Search for stocks...">
-                </form>
+    
+    <input type="text" class="form-control" id="searchInput" name="searchQuery" value="${searchQuery}" placeholder="Search for stocks...">
+</form>
+
+                
             </div>
         </div>
         <div class="table-responsive rounded">
@@ -147,17 +154,16 @@ header[data-astro-cid-rafkve5z] {
  <script>
  
  function redirectToStockDetail(symbol) {
-     window.location.href = 'StockDetailServlet?symbol=' + symbol;
+     window.location.href = '/stockDetail?symbol=' + symbol;
  }
  function sortTable(field) {
-     let sortOrder = '<%= request.getParameter("sortOrder") %>';
-     // Toggle sort order
-     sortOrder = sortOrder === 'true' ? 'false' : 'true';
-     document.getElementById('sortField').value = field;
-
-     document.getElementById('sortOrder').value = sortOrder;
-     document.getElementById('filterForm').submit();
- }
+	    let sortOrder = '${sortOrder}';
+	    // Toggle sort order
+	    sortOrder = sortOrder === 'true' ? 'false' : 'true';
+	    document.getElementById('sortField').value = field;
+	    document.getElementById('sortOrder').value = sortOrder;
+	    document.getElementById('filterForm').submit();
+	}
 </script>
 
     

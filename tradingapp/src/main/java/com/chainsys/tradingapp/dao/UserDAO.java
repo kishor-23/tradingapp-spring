@@ -14,4 +14,5 @@ public interface UserDAO {
 	public boolean checkUserAlreadyExists(String mailId);
 	public Blob getUserProfilePicture(int userId);
 	public void updateUserProfilePicture(int userId, Blob profilePicture);
+	 public void addMoneyToUser(int userId, double amount) ;
 }

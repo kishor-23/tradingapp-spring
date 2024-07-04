@@ -14,4 +14,8 @@ public class Portfolio {
     private int quantity;
     private double total;
     private String symbol;
+	private String company;
+	private double buyedPrice;
+
+
 }

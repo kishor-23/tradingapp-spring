@@ -35,7 +35,7 @@ public class NomineeImpl implements NomineeDAO {
 
     @Override
     public List<Nominee> getAllNomineesByUserId(int userId)  {
-        String sql = "SELECT nominee_id, nominee_name, relationship, phone_no FROM Nominee WHERE user_id = ?";
+        String sql = "SELECT nominee_id, nominee_name, relationship, phone_no,user_id FROM Nominee WHERE user_id = ?";
         return jdbcTemplate.query(sql, new NomineeRowMapper(),userId);
     }
 

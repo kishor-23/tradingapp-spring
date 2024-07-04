@@ -1,7 +1,5 @@
 package com.chainsys.tradingapp.controller;
 
-
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,14 +24,15 @@ import java.util.List;
 @RequestMapping("/nominee")
 @Validated
 public class NomineeController {
+	private NomineeDAO nomineeOperations;
+	private UserDAO userOperations;
 
-    @Autowired
-    private NomineeDAO nomineeOperations;
-
-    @Autowired
-    private UserDAO userOperations;
-
-    @GetMapping("/list")
+	@Autowired
+	public NomineeController(NomineeImpl nomineeImpl, UserImpl userImpl) {
+		this.nomineeOperations = nomineeImpl;
+		this.userOperations = userImpl;
+	}
+	@GetMapping("/list")
     public String listNominees(HttpSession session, Model model) throws SQLException, ClassNotFoundException {
         User user = (User) session.getAttribute("user");
         if (user == null) {
@@ -44,9 +43,9 @@ public class NomineeController {
         List<Nominee> listNominees = nomineeOperations.getAllNomineesByUserId(user.getId());
         session.setAttribute("user", updatedUser);
         model.addAttribute("listNominees", listNominees);
-        return "profile";
+        return "redirect:/profile";
     }
-
+	
     @PostMapping("/add")
     public String addNominee(@Valid @ModelAttribute Nominee nominee, HttpSession session) throws SQLException, ClassNotFoundException {
         User user = (User) session.getAttribute("user");
@@ -56,18 +55,18 @@ public class NomineeController {
 
         nominee.setUserId(user.getId());
         nomineeOperations.addNominee(nominee);
-        return "redirect:/nominee/list";
+        return "redirect:/profile";
     }
 
     @PostMapping("/update")
     public String updateNominee(@Valid @ModelAttribute Nominee nominee) throws SQLException, ClassNotFoundException {
         nomineeOperations.updateNominee(nominee);
-        return "redirect:/nominee/list";
+        return "redirect:/profile";
     }
 
     @PostMapping("/delete")
     public String deleteNominee(@RequestParam int nomineeId) throws SQLException, ClassNotFoundException {
         nomineeOperations.deleteNominee(nomineeId);
-        return "redirect:/nominee/list";
+        return "redirect:/profile";
     }
 }

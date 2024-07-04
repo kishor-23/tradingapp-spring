@@ -1,11 +1,15 @@
+<%@page
+	import="org.springframework.web.context.support.WebApplicationContextUtils"%>
+
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
 <%@ page import="java.util.List"%>
 <%@ page import="com.chainsys.tradingapp.model.*"%>
 <%@ page import="com.chainsys.tradingapp.dao.*"%>
 <%@ page import="com.chainsys.tradingapp.dao.impl.*"%>
+<%@ page import="org.springframework.context.ApplicationContext"%>
+<%@ page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
 
-<%@ page import="java.math.BigDecimal"%>
 
 
 <%@ page import="jakarta.servlet.http.HttpSession"%>
@@ -21,15 +25,17 @@ response.setHeader("Expires", "0"); // Proxies
 
 User user = (User) session.getAttribute("user");
 
-PortfolioDAO portfolioOperations = new PortfolioImpl();
-TransactionDAO transOP = new TransactionImpl();
-List<CategoryQuantity> categoryQuantities = portfolioOperations.getTotalQuantityByCapCategory(user.getId());
+ApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
+PortfolioDAO portfolioOperations = (PortfolioDAO) context.getBean("portfolioImpl");
+TransactionDAO transOP = (TransactionDAO) context.getBean("transactionImpl");
+NomineeDAO NomineeOperations =(NomineeDAO)context.getBean("nomineeImpl");
+List<Category> categoryQuantities = portfolioOperations.getCategoryQuantities(user.getId());
 
 int smallCapPercentage = 0;
 int mediumCapPercentage = 0;
 int largeCapPercentage = 0;
 
-for (CategoryQuantity cq : categoryQuantities) {
+for (Category cq : categoryQuantities) {
 	int totalQuantity = cq.getTotalQuantity();
 	int userTotalQuantity = cq.getUserTotalQuantity();
 	int percentage = Math.round((float) totalQuantity / userTotalQuantity * 100);
@@ -199,7 +205,7 @@ button:hover {
 							if (user.getProfilePicture() != null) {
 							%>
 							<img id="profileImage"
-								src="ProfilePictureServlet?userId=<%=user.getId()%>"
+								src="/profilePicture?userId=<%=user.getId()%>"
 								onclick="openProfilePicturePopup()" alt="avatar"
 								class="rounded-circle img-fluid" style="width: 150px;">
 							<%
@@ -214,7 +220,7 @@ button:hover {
 							<h5 class="my-3"><%=user.getName()%></h5>
 
 							<div class="d-flex justify-content-center mb-2">
-								<a class="btn btn-primary" href="LogoutServlet">Logout</a>
+								<a class="btn btn-primary" href="logout">Logout</a>
 								<button id="btnUpdateProfilePicture"
 									class="btn btn-outline-primary ms-1">Update Profile
 									Picture</button>
@@ -365,8 +371,8 @@ button:hover {
 											<span class="text-primary font-italic me-1">Nominee</span>
 											details
 										</p>
-											<%
-										List<Nominee> nominees = (List<Nominee>) request.getAttribute("listNominees");
+										<%
+										List<Nominee> nominees = NomineeOperations.getAllNomineesByUserId(user.getId());
 										%>
 										<p class="mb-0">
 											<button id="btnOpenNomineeForm">Add Nominee</button>
@@ -374,7 +380,7 @@ button:hover {
 									</div>
 									<div class="card-body p-1 mb-2"
 										style="height: 300px; overflow-y: auto;">
-									
+
 										<%
 										if (nominees == null || nominees.isEmpty()) {
 										%>
@@ -437,7 +443,7 @@ button:hover {
 							<div class="card mb-4 mb-md-0">
 
 								<div class="card-body">
-									<a href="StockServlet"
+									<a href="/stocks"
 										style="text-decoration: none; color: inherit; text-decoration: inherit;">
 										<p class="mb-4">
 											<span class="text-primary font-italic me-1" href="">Stock</span>
@@ -536,7 +542,7 @@ button:hover {
 						<div class="form-container">
 							<span class="close-button" id="btnCloseUpdateProfilePicture">&times;</span>
 							<h1>Update Profile Picture</h1>
-							<form action="ProfilePictureServlet" method="post"
+							<form action="profilePicture" method="post"
 								enctype="multipart/form-data">
 								<input type="hidden" name="userId" value="<%=user.getId()%>">
 								<div class="form-group">
@@ -554,13 +560,13 @@ button:hover {
 						<div class="form-container">
 							<span class="close-button" id="btnCloseNomineeForm">&times;</span>
 							<h1>Add Nominee</h1>
-							<form action="NomineeServlet" method="post">
+							<form action="/nominee/add" method="post">
 								<input type="hidden" name="userId" value="<%=user.getId()%>">
 								<input type="hidden" name="action" value="add">
 								<div class="form-group">
 									<label for="nomineeName">Nominee Name:</label> <input
-										type="text" id="nomineeName" name="name" class="form-control"
-										required>
+										type="text" id="nomineeName" name="nomineeName"
+										class="form-control" required>
 								</div>
 								<div class="form-group">
 									<label for="relationship">Relationship:</label> <select
@@ -575,8 +581,8 @@ button:hover {
 									</select>
 								</div>
 								<div class="form-group">
-									<label for="phone">Phone:</label> <input type="text" id="phone"
-										name="phone" class="form-control" required>
+									<label for="phone">Phone:</label> <input type="text"
+										id="phoneno" name="phoneno" class="form-control" required>
 								</div>
 								<button type="submit">Add Nominee</button>
 							</form>
@@ -589,7 +595,7 @@ button:hover {
 						<div class="form-container">
 							<span class="close-button" id="btnCloseAddMoneyForm">&times;</span>
 							<h1>Add Money</h1>
-							<form action="MoneyServlet" method="post">
+							<form action="addMoney" method="post">
 								<input type="hidden" name="userId" value="<%=user.getId()%>">
 								<div class="form-group">
 									<label for="amount">Amount:</label> <input type="number"
@@ -617,15 +623,18 @@ button:hover {
 		<div class="form-container">
 			<span class="close-button" id="btnCloseEditNomineeForm">&times;</span>
 			<h1>Edit Nominee</h1>
-			<form id="editNomineeForm" action="NomineeServlet" method="post">
+			<form id="editNomineeForm" action="/nominee/update" method="post">
 				<input type="hidden" name="action" value="update"> <input
 					type="hidden" name="nomineeId" id="editNomineeId"> <input
 					type="hidden" name="userId" value="<%=user.getId()%>">
+
 				<div class="form-group">
 					<label for="editNomineeName">Nominee Name:</label> <input
 						type="text" id="editNomineeName" name="nomineeName"
-						class="form-control" required>
+						class="form-control" required pattern="[A-Za-z\s]+"
+						title="Nominee Name should contain only letters and spaces.">
 				</div>
+
 				<div class="form-group">
 					<label for="editRelationship">Relationship:</label> <select
 						id="editRelationship" name="relationship" class="form-control"
@@ -635,14 +644,15 @@ button:hover {
 						<option value="Parent">Parent</option>
 						<option value="Sibling">Sibling</option>
 						<option value="Child">Child</option>
-						<!-- Add more options as needed -->
-
 					</select>
 				</div>
+
 				<div class="form-group">
 					<label for="editPhone">Phone:</label> <input type="text"
-						id="editPhone" name="phone" class="form-control" required>
+						id="editPhone" name="phoneno" class="form-control" required
+						pattern="[0-9]{10}" title="Phone number should be 10 digits.">
 				</div>
+
 				<button type="submit">Update Nominee</button>
 			</form>
 		</div>
@@ -653,7 +663,7 @@ button:hover {
 		<div class="form-container">
 			<span class="close-button" id="btnCloseDeleteNomineeForm">&times;</span>
 			<h1>Delete Nominee</h1>
-			<form id="deleteNomineeForm" action="NomineeServlet" method="post">
+			<form id="deleteNomineeForm" action="/nominee/delete" method="post">
 				<input type="hidden" name="action" value="delete"> <input
 					type="hidden" name="nomineeId" id="deleteNomineeId"> <input
 					type="hidden" name="userId" value="<%=user.getId()%>">
@@ -673,7 +683,7 @@ button:hover {
 				class="close" onclick="closeProfilePicturePopup()">&times;</span>
 		</div>
 	</div>
-	
+
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 	<script>
 $(document).ready(function() {

@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CategoryQuantity {
+public class Category {
 	 private String capCategory;
 	    private int totalQuantity;
 	    private int userTotalQuantity;
