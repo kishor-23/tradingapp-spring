@@ -1,12 +1,17 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+    <%@ page import="org.springframework.context.ApplicationContext"%>
+<%@ page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
+<%@ page import="jakarta.servlet.http.HttpSession"%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <%@ page import="java.util.List"%>
-<%@ page import="com.chainsys.model.*"%>
-<%@ page import="com.chainsys.impl.*"%>
-<%@ page import="com.chainsys.dao.*"%>
+<%@ page import="com.chainsys.tradingapp.model.*"%>
+<%@ page import="com.chainsys.tradingapp.dao.impl.*"%>
+<%@ page import="com.chainsys.tradingapp.dao.*"%>
+<%@ page import="org.springframework.context.ApplicationContext"%>
+<%@ page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Portfolio</title>
@@ -88,8 +93,11 @@ if (session == null || session.getAttribute("user") == null) {
     return;
 }
 User user = (User) session.getAttribute("user");
-PortfolioDAO portfolioOperations = new PortfolioImpl();
-StockImpl stock = new StockImpl();
+ApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
+
+PortfolioDAO portfolioOperations = (PortfolioDAO) context.getBean("portfolioImpl");
+StockDAO stockOperations = (StockDAO) context.getBean("stockImpl");
+
 List<Portfolio> portfoliolist = portfolioOperations.getPortfoliosByUserId(user.getId());
 %>
 <body>
@@ -127,7 +135,7 @@ List<Portfolio> portfoliolist = portfolioOperations.getPortfoliosByUserId(user.g
                                 <tbody>
                                     <%
                                     for (Portfolio portfolio : portfoliolist) {
-                                        double currentPrice = stock.stockPriceById(portfolio.getStockId());
+                                        double currentPrice = stockOperations.stockPriceById(portfolio.getStockId());
                                         double investedPrice = portfolio.getBuyedPrice();
                                         boolean isPriceUp = currentPrice > investedPrice;
                                     %>

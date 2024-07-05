@@ -3,6 +3,8 @@ package com.chainsys.tradingapp.controller;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,135 +38,101 @@ public class StockController {
     }
 
     @GetMapping("/stocks")
-    public String viewStocks(@RequestParam(value = "page", defaultValue = "1") int page,
-                             @RequestParam(value = "itemsPerPage", defaultValue = "10") int itemsPerPage,
-                             @RequestParam(value = "searchQuery", required = false) String searchQuery,
-                             @RequestParam(value = "filterCategory", required = false) String filterCategory,
-                             @RequestParam(value = "sortField", required = false) String sortField,
-                             @RequestParam(value = "sortOrder", required = false) Boolean sortOrder,
+    public String viewStocks(@RequestParam(defaultValue = "1") int page,
+                             @RequestParam(defaultValue = "10") int itemsPerPage,
+                             @RequestParam(required = false) String searchQuery,
+                             @RequestParam(defaultValue = "All") String filterCategory,
+                             @RequestParam(required = false) String sortField,
+                             @RequestParam(defaultValue = "true") boolean sortOrder,
                              Model model) {
         try {
-            // Fetch all stocks from database with optional sorting
-            List<Stock> allStocks = selectAllStocks(sortField, sortOrder);
-
-            // Apply filtering based on filterCategory
+            List<Stock> allStocks = stockOperations.selectAllStocks();
             List<Stock> filteredStocks = filterStocks(allStocks, filterCategory);
-
-            // Apply searching based on searchQuery
             List<Stock> searchedStocks = searchStocks(filteredStocks, searchQuery);
+            sortStocks(searchedStocks, sortField, sortOrder);
 
-            // Pagination logic
             int totalItems = searchedStocks.size();
             int totalPages = (int) Math.ceil((double) totalItems / itemsPerPage);
             int startItemIndex = (page - 1) * itemsPerPage;
             int endItemIndex = Math.min(startItemIndex + itemsPerPage, totalItems);
 
-            // Extract paginated subset of stocks
             List<Stock> paginatedStocks = searchedStocks.subList(startItemIndex, endItemIndex);
 
-            // Set model attributes for view rendering
-            setModelAttributes(model, paginatedStocks, totalPages, page, itemsPerPage, filterCategory,
-                    searchQuery, sortField, sortOrder);
+            setRequestAttributes(model, paginatedStocks, totalPages, page, itemsPerPage, filterCategory, searchQuery, sortField, sortOrder);
 
             return "stock.jsp";
         } catch (Exception e) {
-            model.addAttribute("error", "An unexpected error occurred");
+            model.addAttribute("errorMessage", "An unexpected error occurred");
             return "error";
         }
     }
 
-    private List<Stock> selectAllStocks(String sortField, Boolean sortOrder) {
-        // Construct SQL query to fetch all stocks with optional sorting
-        String sql = "SELECT * FROM stocks";
-
-        // Append ORDER BY clause based on sortField and sortOrder
-        if (sortField != null && isValidSortField(sortField)) {
-            sql += " ORDER BY " + sortField;
-            if (sortOrder != null && !sortOrder) {
-                sql += " DESC";
-            }
-        }
-
-        // Execute query and map result to Stock objects using RowMapper
-        return jdbcTemplate.query(sql, new StockRowMapper());
-    }
-
-    private boolean isValidSortField(String sortField) {
-        // Validate if sortField is a valid field for sorting
-        switch (sortField) {
-            case "symbol":
-            case "companyName":
-            case "currentStockPrice":
-            case "capCategory":
-                return true;
-            default:
-                return false;
-        }
-    }
-
     private List<Stock> filterStocks(List<Stock> stocks, String filterCategory) {
-        // Filter stocks based on filterCategory
-        if (filterCategory == null || "All".equals(filterCategory)) {
-            return stocks;  // Return all stocks if no filter or "All" category
+        if ("All".equals(filterCategory)) {
+            return stocks;
         }
-
-        // Create list to hold filtered stocks
         List<Stock> filteredStocks = new ArrayList<>();
         for (Stock stock : stocks) {
-            if (filterCategory.equalsIgnoreCase(stock.getCapCategory())) {
-                filteredStocks.add(stock);  // Add stock to filtered list if matches filterCategory
+            if (stock.getCapCategory().equalsIgnoreCase(filterCategory)) {
+                filteredStocks.add(stock);
             }
         }
-        return filteredStocks;  // Return filtered stocks
+        return filteredStocks;
     }
 
     private List<Stock> searchStocks(List<Stock> stocks, String searchQuery) {
-        // Search stocks based on searchQuery
         if (searchQuery == null || searchQuery.isEmpty()) {
-            return stocks;  // Return all stocks if no search query
+            return stocks;
         }
-
-        // Convert searchQuery to uppercase for case-insensitive search
         String upperCaseSearchQuery = searchQuery.toUpperCase();
-
-        // Create list to hold searched stocks
         List<Stock> searchedStocks = new ArrayList<>();
         for (Stock stock : stocks) {
-            // Check if symbol or company name contains searchQuery (case-insensitive)
             if (stock.getSymbol().toUpperCase().contains(upperCaseSearchQuery)
                     || stock.getCompanyName().toUpperCase().contains(upperCaseSearchQuery)) {
-                searchedStocks.add(stock);  // Add stock to searched list if matches searchQuery
+                searchedStocks.add(stock);
             }
         }
-        return searchedStocks;  // Return searched stocks
+        return searchedStocks;
     }
 
-    private void setModelAttributes(Model model, List<Stock> paginatedStocks, int totalPages,
-                                    int currentPage, int itemsPerPage, String filterCategory,
-                                    String searchQuery, String sortField, Boolean sortOrder) {
-        // Set model attributes for rendering in view
+    private void sortStocks(List<Stock> stocks, String sortField, boolean sortOrder) {
+        if (sortField == null) {
+            return;
+        }
+        Comparator<Stock> comparator = null;
+        switch (sortField) {
+            case "symbol":
+                comparator = Comparator.comparing(Stock::getSymbol);
+                break;
+            case "companyName":
+                comparator = Comparator.comparing(Stock::getCompanyName);
+                break;
+            case "currentStockPrice":
+                comparator = Comparator.comparing(Stock::getCurrentStockPrice);
+                break;
+            case "capCategory":
+                comparator = Comparator.comparing(Stock::getCapCategory);
+                break;
+        }
+        if (comparator != null) {
+            if (!sortOrder) {
+                comparator = comparator.reversed();
+            }
+            Collections.sort(stocks, comparator);
+        }
+    }
+
+    private void setRequestAttributes(Model model, List<Stock> paginatedStocks, int totalPages,
+                                      int currentPage, int itemsPerPage, String filterCategory,
+                                      String searchQuery, String sortField, boolean sortOrder) {
         model.addAttribute("listStocks", paginatedStocks);
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("currentPage", currentPage);
         model.addAttribute("itemsPerPage", itemsPerPage);
-        model.addAttribute("filterCategory", filterCategory != null ? filterCategory : "All");
+        model.addAttribute("filterCategory", filterCategory);
         model.addAttribute("searchQuery", searchQuery != null ? searchQuery : "");
         model.addAttribute("sortField", sortField != null ? sortField : "symbol");
-        model.addAttribute("sortOrder", sortOrder != null ? sortOrder : true);  // Default to ascending order if sortOrder is null
-    }
-
-    // RowMapper for mapping result set rows to Stock objects
-    private static class StockRowMapper implements RowMapper<Stock> {
-        @Override
-        public Stock mapRow(ResultSet rs, int rowNum) throws SQLException {
-            // Map ResultSet row to Stock object
-            Stock stock = new Stock();
-            stock.setSymbol(rs.getString("symbol"));
-            stock.setCompanyName(rs.getString("company_name"));
-            stock.setCurrentStockPrice(rs.getDouble("current_stock_price"));
-            stock.setCapCategory(rs.getString("cap_category"));
-            return stock;  // Return mapped Stock object
-        }
+        model.addAttribute("sortOrder", sortOrder);
     }
     
 }

@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -40,8 +41,13 @@ public class UserImpl implements UserDAO {
     @Override
     public User getUserByEmail(String email) throws SQLException {
         String selectQuery = "SELECT id, name, email, pancardno, phone, dob, profilePicture, password, balance FROM users WHERE email = ?";
-        return jdbcTemplate.queryForObject(selectQuery, new UserRowMapper(), email);
+        try {
+            return jdbcTemplate.queryForObject(selectQuery, new UserRowMapper(), email);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
+
 
     @Override
     public void addUser(User user) {

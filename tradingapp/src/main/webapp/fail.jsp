@@ -15,7 +15,6 @@
                 <i class="fa fa-times-circle" aria-hidden="true"></i>
                 <h2>Your payment failed</h2>
                 <p><%= request.getAttribute("error") %></p>
-                <p>Try again later</p>
             </div>
         </div>
     </div>

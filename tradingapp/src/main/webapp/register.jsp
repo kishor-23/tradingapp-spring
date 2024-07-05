@@ -42,7 +42,7 @@
                     <input type="email" id="email" name="email" required/>
                 </div>
                 <div class="input">
-                    <label class="textlabel" for="pancardno">Pancard no</label><br>
+                    <label class="textlabel" for="pancardno">Pan</label><br>
                     <input type="text" id="pancardno" name="pancardno" required pattern="[A-Z]{5}[0-9]{4}[A-Z]{1}" title="Please enter a valid PAN card number (5 uppercase letters, 4 digits, 1 uppercase letter)"/>
                 </div>
                 <div class="input">

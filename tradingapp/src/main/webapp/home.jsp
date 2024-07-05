@@ -7,9 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
         <link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">
-    
-    <!-- favicon -->
-    <link rel="icon" href="assets/favicon.svg" type="image/x-icon">
+        <link rel="icon" href="assets/favicon.svg" type="image/x-icon">
   <link rel="stylesheet" href="style/navbar.css"> 
       <link rel="stylesheet" href="style/home.css">
     
@@ -25,7 +23,7 @@
     </style>
     <header>
         <div style="display: flex; justify-content: center; font-size:3px">
-           <a href="NomineeServlet?action=list" style="color: black;"><div class="logo"><img src="assets/favicon.svg" width="32" height="32" alt="logo"><p> ChainTrade </p></div>
+           <a href="/profile" style="color: black;"><div class="logo"><img src="assets/favicon.svg" width="32" height="32" alt="logo"><p> ChainTrade </p></div>
        
            </a>  </div>
         <div class="hamburger">
@@ -47,7 +45,7 @@
                 
                 
                 %>
-                 <li><a href="NomineeServlet?action=list" style="background-color: blue; color: white;" >profile</a></li>
+                 <li><a href="/profile" style="background-color: blue; color: white;" >profile</a></li>
                  <%} %>
             </ul>
         </nav>

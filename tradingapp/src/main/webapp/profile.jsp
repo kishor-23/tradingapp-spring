@@ -9,10 +9,8 @@
 <%@ page import="com.chainsys.tradingapp.dao.impl.*"%>
 <%@ page import="org.springframework.context.ApplicationContext"%>
 <%@ page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
-
-
-
 <%@ page import="jakarta.servlet.http.HttpSession"%>
+
 <%
 if (session == null || session.getAttribute("user") == null) {
 	response.sendRedirect("login.jsp");

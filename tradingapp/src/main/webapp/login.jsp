@@ -7,8 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <link rel="stylesheet" href="style/loginform.css">
-      <link rel="icon" href="assets/favicon.svg" type="image/x-icon">
-    
+    <link rel="icon" href="assets/favicon.svg" type="image/x-icon">
     <link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css" />
@@ -32,15 +31,14 @@
                     <input type="password" name="password" id="password" required/>
                     <i class="uil uil-eye-slash showHidePw" id="showpassword"></i>                
                 </div>
-               <% 
-        String msg = request.getParameter("msg");
-        if (msg!=null) {
-        %>
-            <p class="error"><%=msg %></p>
-        <% 
-        } 
-        	   %>	
-       
+                <% 
+                    String msg = (String) request.getAttribute("msg");
+                    if (msg != null) {
+                %>
+                    <p class="error"><%= msg %></p>
+                <% 
+                    }
+                %>
                 <div class="btn">
                     <button type="submit" name="login">Login</button>
                 </div>

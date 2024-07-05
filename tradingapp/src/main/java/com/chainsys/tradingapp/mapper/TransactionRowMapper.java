@@ -21,6 +21,7 @@ public class TransactionRowMapper implements RowMapper<Transaction> {
         transaction.setTimestamp(resultSet.getTimestamp("timestamp"));
         transaction.setStockSymbol(resultSet.getString("symbol"));
         transaction.setCompanyName(resultSet.getString("company_name"));
+        transaction.setProfitOrLoss(resultSet.getDouble("profit_loss"));
         return transaction;
     }
 }

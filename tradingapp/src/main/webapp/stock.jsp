@@ -10,10 +10,8 @@
     response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1
     response.setHeader("Pragma", "no-cache"); // HTTP 1.0
     response.setHeader("Expires", "0"); // Proxies
-
     User user = (User) session.getAttribute("user");
 %>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -112,15 +110,11 @@ header[data-astro-cid-rafkve5z] {
     <button type="submit" class="btn btn-info" name="filterCategory" value="All">All</button>
 </form>
 
-</form>
+
             </div>
             <div class="col-md-4 search-bar">
           <form method="get" action="/stocks" id="searchForm">
-    <input type="hidden" name="page" value="1">
-    <input type="hidden" name="itemsPerPage" value="${itemsPerPage}">
-    <input type="hidden" name="sortField" value="${sortField}">
-    <input type="hidden" name="sortOrder" value="${sortOrder}">
-    
+
     
     <input type="text" class="form-control" id="searchInput" name="searchQuery" value="${searchQuery}" placeholder="Search for stocks...">
 </form>
@@ -220,7 +214,7 @@ header[data-astro-cid-rafkve5z] {
 <div class="modal fade" id="buyModal" tabindex="-1" role="dialog" aria-labelledby="buyModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <form action="StockTransactionServlet" method="post">
+            <form action="StockTransaction" method="post">
               <input type="hidden" name="transactionType" value="buy">
                 <div class="modal-header bg-primary text-white">
                     <h5 class="modal-title" id="buyModalLabel">Buy Stock</h5>
@@ -234,7 +228,7 @@ header[data-astro-cid-rafkve5z] {
                         <input type="text" class="form-control" id="stockSymbol" name="symbol" readonly>
                     </div>
                     <div class="form-group mb-3">
-                        <input type="hidden" class="form-control" id="stockId" name="stockId" readonly>
+                        <input type="number" class="form-control" id="stockId" name="stockId" readonly>
                     </div>
                     <div class="form-group mb-3">
                         <label for="userid" class="font-weight-bold">User ID</label>
@@ -266,7 +260,7 @@ header[data-astro-cid-rafkve5z] {
 <div class="modal fade" id="sellModal" tabindex="-1" role="dialog" aria-labelledby="sellModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <form action="StockTransactionServlet" method="post">
+            <form action="StockTransaction" method="post">
             <input type="hidden" name="transactionType" value="sell">
             
                 <div class="modal-header bg-danger text-white">
@@ -338,7 +332,6 @@ $('#buyModal').on('show.bs.modal', function (event) {
     modal.find('.modal-body #totalPrice').val(price);
     modal.find('.modal-body #stockId').val(stockId);
 });
-
 // Handle Sell Button Click
 $('#sellModal').on('show.bs.modal', function (event) {
     let button = $(event.relatedTarget);

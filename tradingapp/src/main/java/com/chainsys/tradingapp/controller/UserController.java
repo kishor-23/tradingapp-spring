@@ -21,14 +21,17 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.chainsys.tradingapp.dao.UserDAO;
 import com.chainsys.tradingapp.dao.impl.UserImpl;
 import com.chainsys.tradingapp.model.User;
+import com.chainsys.tradingapp.util.EmailService;
 import com.chainsys.tradingapp.util.PasswordHashing;
 
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -36,14 +39,22 @@ import jakarta.servlet.http.HttpSession;
 @Controller
 public class UserController {
     private final UserDAO userOperations;
-
+    @Autowired
+    private EmailService emailService;
     @Autowired
     public UserController(UserImpl userImpl) {
         this.userOperations = userImpl;
     }
     @GetMapping("/profile")
-    public String profile() {
+    public String profile(HttpSession session) throws ClassNotFoundException, SQLException {
+        User updatedUser = userOperations.getUserByEmail(((User) session.getAttribute("user")).getEmail());
+        session.setAttribute("user", updatedUser);
+
     	return "profile.jsp";
+    }
+    @RequestMapping("/")
+    public String home() {
+    	return "home.jsp";
     }
 
     @GetMapping("/register")
@@ -102,9 +113,11 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public String loginUser(@RequestParam String email, @RequestParam String password, HttpSession session, Model model) throws ClassNotFoundException {
+    public String loginUser(@RequestParam String email, @RequestParam String password, HttpSession session, Model model) throws ClassNotFoundException, MessagingException, IOException {
         try {
+
             User user = userOperations.getUserByEmail(email);
+//     emailService.sendWelcomeEmail(user.getEmail(), "Welcome to ChainTrade!");
             if (user != null && PasswordHashing.checkPassword(password, user.getPassword())) {
                 session.setAttribute("user", user);
                 return "redirect:/profile";
@@ -118,6 +131,7 @@ public class UserController {
             return "login.jsp";
         }
     }
+
     @PostMapping("/addMoney")
     public String addMoney(HttpServletRequest request, HttpSession session, Model model) throws ClassNotFoundException {
         int userId = Integer.parseInt(request.getParameter("userId"));
