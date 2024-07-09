@@ -1,5 +1,6 @@
 package com.chainsys.tradingapp.controller;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,17 +9,24 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.ModelAndView;
 
+import com.chainsys.tradingapp.dao.StockDAO;
 import com.chainsys.tradingapp.dao.TransactionDAO;
-import com.chainsys.tradingapp.dao.impl.StockImpl;
+import com.chainsys.tradingapp.model.Stock;
 import com.chainsys.tradingapp.model.Transaction;
+import com.chainsys.tradingapp.model.User;
+import com.chainsys.tradingapp.util.EmailService;
+
+import jakarta.mail.MessagingException;
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class TransactionController {
 
     @Autowired
-    private StockImpl stockDAO;
+    private StockDAO stockDAO;
+    @Autowired
+    private EmailService emailService;
 
     private final TransactionDAO transactionDAO;
 
@@ -40,21 +48,27 @@ public class TransactionController {
                                     @RequestParam("stockId") int stockId,
                                     @RequestParam("quantity") int quantity,
                                     @RequestParam("price") double price,
-                                    Model model) {
+                                    HttpSession session,
+                                    Model model) throws MessagingException, IOException {
         if ("buy".equalsIgnoreCase(transactionType)) {
-            return handleBuy(userId, stockId, quantity, price, model);
+            return handleBuy(userId, stockId, quantity, price, model,session);
         } else if ("sell".equalsIgnoreCase(transactionType)) {
-            return handleSell(userId, stockId, quantity, price, model);
+            return handleSell(userId, stockId, quantity, price, model, session);
         } else {
             model.addAttribute(ERROR_MESSAGE, "Invalid transaction type");
             return ERROR_FILE;
         }
     }
 
-    private String handleBuy(int userId, int stockId, int quantity, double price, Model model) {
+    private String handleBuy(int userId, int stockId, int quantity, double price, Model model,HttpSession session) throws MessagingException, IOException {
         int result = stockDAO.buyStock(userId, stockId, quantity, price);
 
         if (result == 1) {
+            User user = (User) session.getAttribute("user");
+            Stock stock = stockDAO.getStockDetailsById(stockId);
+
+            emailService.sendOrderConfirmation(user.getEmail(),user.getName(),stock.getCompanyName(),"buy",quantity);
+
             return "redirect:/ordersuccess?userid=" + userId + "&stockId=" + stockId + "&quantity=" + quantity + "&price=" + price + "&transactionType=buy";
         } else {
             model.addAttribute(ERROR_MESSAGE, "insufficientBalance");
@@ -62,16 +76,22 @@ public class TransactionController {
         }
     }
 
-    private String handleSell(int userId, int stockId, int quantity, double price, Model model) {
+    private String handleSell(int userId, int stockId, int quantity, double price, Model model, HttpSession session) throws MessagingException, IOException {
         int result = stockDAO.sellStock(userId, stockId, quantity, price);
 
         if (result == 1) {
+        	  User user = (User) session.getAttribute("user");
+              Stock stock = stockDAO.getStockDetailsById(stockId);
+
+              emailService.sendOrderConfirmation(user.getEmail(),  "order success",stock.getCompanyName(),"sell",quantity);
+
             return "redirect:/ordersuccess?userid=" + userId + "&stockId=" + stockId + "&quantity=" + quantity + "&price=" + price + "&transactionType=sell";
         } else {
-            model.addAttribute(ERROR_MESSAGE, "you don't have that stock to sell");
-            return ERROR_FILE;
+            model.addAttribute(ERROR_MESSAGE, "You don't have that stock to sell");
+            return ERROR_FILE; 
         }
     }
+
     @PostMapping("/transactions")
     public String getTransactions(@RequestParam("userId") Integer userId, Model model) {
         List<Transaction> transactions = null;

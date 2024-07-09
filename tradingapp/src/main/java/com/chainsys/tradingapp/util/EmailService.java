@@ -1,7 +1,6 @@
 package com.chainsys.tradingapp.util;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -16,9 +15,11 @@ import java.nio.file.Paths;
 @Service
 public class EmailService {
 
+ 
     @Autowired
     private JavaMailSender mailSender;
 
+  
     public void sendWelcomeEmail(String toEmail, String subject) throws MessagingException, IOException {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
@@ -35,6 +36,22 @@ public class EmailService {
         // Add logo image as an inline resource (if needed)
         // ClassPathResource resource = new ClassPathResource("static/images/logo.png");
         // helper.addInline("logoImage", resource);
+
+        mailSender.send(message);
+    }
+    public void sendOrderConfirmation(String to, String username, String productName,String type, int quantity) throws MessagingException {
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+        String htmlContent = "<html><body>" +
+                "<h1>Hello, " + username + "!</h1>" +
+                "<p>Your "+type +" order for " + quantity + " units of " + productName + " has been successfully processed.</p>" +
+                "<p>Thank you for trading with us.</p>" +
+                "</body></html>";
+
+        helper.setTo(to);
+        helper.setSubject("Order Confirmation");
+        helper.setText(htmlContent, true);
 
         mailSender.send(message);
     }

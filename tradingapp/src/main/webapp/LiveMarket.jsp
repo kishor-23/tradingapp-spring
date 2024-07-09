@@ -53,7 +53,7 @@ a {
     </style>
    <header>
         <div style="display: flex; justify-content: center; font-size:2px">
-           <a href="NomineeServlet?action=list" style="color: black;"><div class="logo"><img src="assets/favicon.svg" width="32" height="32" alt="logo"><p style="padding-top:14px"> ChainTrade </p></div>
+           <a href="/profile" style="color: black;"><div class="logo"><img src="assets/favicon.svg" width="32" height="32" alt="logo"><p style="padding-top:14px"> ChainTrade </p></div>
        
            </a>  </div>
         <div class="hamburger">
@@ -75,7 +75,7 @@ a {
                 
                 
                 %>
-                 <li><a href="NomineeServlet?action=list" style="background-color: blue; color: white;" >profile</a></li>
+                 <li><a href="/profile" style="background-color: blue; color: white;" >profile</a></li>
                  <%} %>
             </ul>
         </nav>
@@ -121,10 +121,10 @@ a {
           <!-- TradingView Widget END -->
    </div>
  <div class="my-2 mx-2 p-3 ">
-    <a href="StockServlet" class="btn btn-primary p-10 w-100 ">View All Stocks</a>
+    <a href="/stocks" class="btn btn-primary p-10 w-100 ">View All Stocks</a>
  </div>
   <div class=" mx-2 p-3 ">
-    <a href="realtimestockdata.jsp" class="btn btn-success p-10 w-100 ">View sample live Stock</a>
+    <a href="realtimestockdata.html" class="btn btn-success p-10 w-100 ">View sample live Stock</a>
  </div>
 </body>
 </html>

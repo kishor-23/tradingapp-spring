@@ -1,5 +1,3 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-    pageEncoding="ISO-8859-1"%>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -37,12 +35,12 @@
         <nav aria-label="breadcrumb" class="bg-body-tertiary rounded-3 p-3 mb-4">
           <ol class="breadcrumb mb-0 d-flex justify-content-between align-items-center w-100">
             <div class="breadcrumb-items d-flex align-items-center">
-              <li class="breadcrumb-item"><a href="home.jsp">Home</a></li>
+              <li class="breadcrumb-item"><a href="home.html">Home</a></li>
               <li class="breadcrumb-item active" aria-current="page">Chart</li>
               <li class="breadcrumb-item active" aria-current="page">Apple</li>
             </div>
             <div class="logo d-flex align-items-center">
-              <img src="assets/favicon.svg" width="32" height="32" alt="logo">
+              <img src="./assets/images/favicon.svg" width="32" height="32" alt="Cryptex logo">
               <p class="mb-0 ms-2">ChainTrade</p>
             </div>
           </ol>
@@ -108,8 +106,8 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
-        const apiKey = 'JAID6NXIGQ4YRGLG';
-        //const apiKey = 'L4XUJTOGC60BL9C8';
+        // const apiKey = 'FYSHYCN2RCIC5MYY';
+        const apiKey = 'L4XUJTOGC60BL9C8';
         const symbol = 'AAPL';
         const apiUrl = `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${symbol}&interval=1min&apikey=${apiKey}`;
 

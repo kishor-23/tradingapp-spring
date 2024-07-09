@@ -64,7 +64,7 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public String registerUser(@ModelAttribute User user, @RequestParam("profile") MultipartFile filePart, HttpServletRequest request, Model model) throws IOException, SQLException {
+    public String registerUser(@ModelAttribute User user, @RequestParam("profile") MultipartFile filePart, HttpServletRequest request, Model model) throws IOException, SQLException, MessagingException {
         // Extract user details from the form
         String dobString = request.getParameter("dob");
         Date dob = null;
@@ -100,6 +100,8 @@ public class UserController {
         boolean userExists = userOperations.checkUserAlreadyExists(user.getEmail());
         if (!userExists) {
             userOperations.addUser(user);
+            emailService.sendWelcomeEmail(user.getEmail(), "Welcome to ChainTrade!");
+
             return "redirect:/login?registered=true";
         } else {
             model.addAttribute("errorMessage", "Registration failed. User already exists. Please login.");

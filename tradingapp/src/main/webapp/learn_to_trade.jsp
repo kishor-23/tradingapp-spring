@@ -104,7 +104,7 @@
                 
                 
                 %>
-                 <li><a href="NomineeServlet?action=list" style="background-color: blue; color: white;" >profile</a></li>
+                 <li><a href="/profile" style="background-color: blue; color: white;" >profile</a></li>
                  <%} %>
             </ul>
         </nav>
