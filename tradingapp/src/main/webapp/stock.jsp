@@ -83,7 +83,7 @@ header[data-astro-cid-rafkve5z] {
 		
           <div class="logo d-flex align-items-center">
             <img src="assets/favicon.svg" width="32" height="32" alt="Chaintrade logo">
-            <a class="mb-0 ms-2" href="NomineeServlet?action=list" style="color: black; text-decoration: none !important;">ChainTrade</a>
+            <a class="mb-0 ms-2" href="/profile" style="color: black; text-decoration: none !important;">ChainTrade</a>
           </div>
           
         

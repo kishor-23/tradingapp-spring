@@ -1,89 +1,120 @@
-<!-- src/main/resources/templates/welcomeEmail.html -->
-<!DOCTYPE html>
-<html>
-<head>
+<html><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="x-apple-disable-message-reformatting">
+    <title></title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
-        body {
-            font-family: 'Poppins', Arial, sans-serif;
+      table, td, div, h1, p {
+        font-family: Arial, sans-serif;
+      }
+      @media screen and (max-width: 530px) {
+        .unsub {
+          display: block;
+          padding: 8px;
+          margin-top: 14px;
+          border-radius: 6px;
+          background-color: #939297;
+          text-decoration: none !important;
+          font-weight: bold;
         }
-        .content {
-            width: 600px;
-            border-collapse: collapse;
-            border: 1px solid #cccccc;
+        .col-lge {
+          max-width: 100% !important;
         }
-        .header {
-            background-color: #345C72;
-            padding: 40px;
-            text-align: center;
-            color: white;
-            font-size: 24px;
+      }
+      @media screen and (min-width: 531px) {
+        .col-sml {
+          max-width: 27% !important;
         }
-        .body {
-            padding: 40px;
-            text-align: left;
-            font-size: 16px;
-            line-height: 1.6;
+        .col-lge {
+          max-width: 73% !important;
         }
-        .footer {
-            background-color: #333333;
-            padding: 40px;
-            text-align: center;
-            color: white;
-            font-size: 14px;
-        }
+      }
     </style>
-</head>
-<body>
-    <table width="100%" border="0" cellspacing="0" cellpadding="0">
-        <tr>
-            <td align="center" style="padding: 20px;">
-                <table class="content">
-                    <!-- Header -->
-                    <tr>
-                        <td class="header">
-                            Responsive Email Template
-                        </td>
-                    </tr>
-
-                    <!-- Body -->
-                    <tr>
-                        <td class="body">
-                            Hello, All! <br>
-                            Lorem odio soluta quae dolores sapiente voluptatibus recusandae aliquam fugit ipsam.
-                            <br><br>
-                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Veniam corporis sint eum nemo animi velit exercitationem impedit. Incidunt, officia facilis atque? Ipsam voluptas fugiat distinctio blanditiis veritatis.
-                        </td>
-                    </tr>
-
-                    <!-- Call to action Button -->
-                    <tr>
-                        <td style="padding: 0px 40px 0px 40px; text-align: center;">
-                            <!-- CTA Button -->
-                            <table cellspacing="0" cellpadding="0" style="margin: auto;">
-                                <tr>
-                                    <td align="center" style="background-color: #345C72; padding: 10px 20px; border-radius: 5px;">
-                                        <a href="https://www.yourwebsite.com" target="_blank" style="color: #ffffff; text-decoration: none; font-weight: bold;">Start Trading Now</a>
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td class="body">
-                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Veniam corporis sint eum nemo animi velit exercitationem impedit.
-                        </td>
-                    </tr>
-
-                    <!-- Footer -->
-                    <tr>
-                        <td class="footer">
-                            Copyright &copy; 2024 | ChainTrad
-                        </td>
-                    </tr>
-                </table>
-            </td>
+  </head>
+  <body style="margin:0;padding:0;word-spacing:normal;background-color:#939297;">
+    <div role="article" aria-roledescription="email" lang="en" style="text-size-adjust:100%;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;background-color:#939297;">
+      <table role="presentation" style="width:100%;border:none;border-spacing:0;">
+        <tbody><tr>
+          <td align="center" style="padding:0;">
+           
+            <table role="presentation" style="width:94%;max-width:600px;border:none;border-spacing:0;text-align:left;font-family:Arial,sans-serif;font-size:16px;line-height:22px;color:#363636;">
+              <tbody><tr>
+                <td style="padding:40px 30px 30px 30px;font-size:24px;font-weight:bold;">
+                  
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:30px;background-color:#ffffff;">
+                  <h1 style="margin-top:0;margin-bottom:16px;font-size:26px;line-height:32px;font-weight:bold;letter-spacing:-0.02em;">Welcome to ChainTrade</h1>
+                  <p style="margin: 0;">We’re thrilled to have you join our community of traders and investors. At ChainTrade, we strive to provide a cutting-edge trading experience, combining powerful tools, insightful data, and a user-friendly platform to help you achieve your financial goals.</p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0;font-size:24px;line-height:28px;font-weight:bold;">
+                  <a href="http://www.example.com/" style="text-decoration:none;"><img src="https://assets.codepen.io/210284/1200x800-2.png" width="600" alt="" style="width:100%;height:auto;display:block;border:none;text-decoration:none;color:#363636;"></a>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:35px 30px 11px 30px;font-size:0;background-color:#ffffff;border-bottom:1px solid #f0f0f5;border-color:rgba(201,201,207,.35);">
+                
+                  <div class="col-sml" style="display:inline-block;width:100%;max-width:145px;vertical-align:top;text-align:left;font-family:Arial,sans-serif;font-size:14px;color:#363636;">
+                    <img src="https://play-lh.googleusercontent.com/XMLLn1jT_ZWXibSKV3bzORq-nESxhKKsv5E8wNFXXphm81i45nTVmzvR1WGGp0E4k4U=w480-h960" width="115" alt="" style="width:115px;max-width:80%;margin-bottom:20px;border-radius:50%;">
+                  </div>
+                 
+                  <div class="col-lge" style="display:inline-block;width:100%;max-width:395px;vertical-align:top;padding-bottom:20px;font-family:Arial,sans-serif;font-size:16px;line-height:22px;color:#363636;">
+                    <p style="margin-top:0;margin-bottom:12px;">The best time to start trading is now! Embrace the opportunity to grow your wealth and sharpen your financial skills. The market is full of potential, and with ChainTrade, you have all the tools you need to succeed. Don’t wait for the perfect moment; take the moment and make it perfect. Start trading today and take control of your financial future.</p>
+                    <p style="margin-top:0;margin-bottom:18px;">"The best time to plant a tree was 20 years ago. The second best time is now." </p>
+                    <p style="margin:0;"><a href="http://localhost:9000/login" style="background: #ff3884; text-decoration: none; padding: 10px 25px; color: #ffffff; border-radius: 4px; display:inline-block; mso-padding-alt:0;text-underline-color:#ff3884"><span style="mso-text-raise:10pt;font-weight:bold;">Start trading now</span><!--[if mso]><i style="letter-spacing: 25px;mso-font-width:-100%">&nbsp;</i><![endif]--></a></p>
+                  </div>
+                  
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:30px;font-size:24px;line-height:28px;font-weight:bold;background-color:#ffffff;border-bottom:1px solid #f0f0f5;border-color:rgba(201,201,207,.35);">
+                  <a href="http://www.example.com/" style="text-decoration:none;"><img src="https://www.tradingview.com/widget-docs/_astro/wdg-5.cPMY8VEb.jpg" width="540" alt="" style="width:100%;height:auto;border:none;text-decoration:none;color:#363636;"></a>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:30px;background-color:#ffffff;">
+                  <p style="margin:0;">Discover the power of our trading app and take control of your financial future. With our intuitive interface, real-time data, and advanced trading tools, you can make informed investment decisions and maximize your profits.</p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:30px;text-align:center;font-size:12px;background-color:#404040;color:#cccccc;">
+                <p style="margin:0 0 8px 0;">
+                    <a href="http://www.facebook.com/" style="text-decoration:none;">
+                        <i class="fab fa-facebook" style="display:inline-block;color:#cccccc;font-size:24px;"></i>
+                    </a>
+                    &nbsp;&nbsp;&nbsp;
+                    <a href="http://www.twitter.com/" style="text-decoration:none;">
+                        <i class="fab fa-twitter" style="display:inline-block;color:#cccccc;font-size:24px;"></i>
+                    </a>
+                    &nbsp;&nbsp;&nbsp;
+                    <a href="http://www.instagram.com/" style="text-decoration:none;">
+                        <i class="fab fa-instagram" style="display:inline-block;color:#cccccc;font-size:24px;"></i>
+                    </a>
+                    &nbsp;&nbsp;&nbsp;
+                    <a href="http://www.youtube.com/" style="text-decoration:none;">
+                        <i class="fab fa-youtube" style="display:inline-block;color:#cccccc;font-size:24px;"></i>
+                    </a>
+                </p>
+                  <p style="margin:0;font-size:14px;line-height:20px;">® ChainTrad 2024<br></p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:40px 30px 30px 30px;font-size:24px;font-weight:bold;">
+                  
+                </td>
+              </tr>
+            </tbody></table>
+          
+          </td>
         </tr>
-    </table>
-</body>
-</html>
+      </tbody></table>
+    </div>
+  
+  
+  
+  
+  </body></html>

@@ -444,7 +444,7 @@ button:hover {
 									<a href="/stocks"
 										style="text-decoration: none; color: inherit; text-decoration: inherit;">
 										<p class="mb-4">
-											<span class="text-primary font-italic me-1" href="">Stock</span>
+											<span class="text-primary font-italic me-1" >Stock</span>
 											details
 										</p>
 									</a>
@@ -575,7 +575,6 @@ button:hover {
 										<option value="Parent">Parent</option>
 										<option value="Sibling">Sibling</option>
 										<option value="Child">Child</option>
-										<!-- Add more options as needed -->
 									</select>
 								</div>
 								<div class="form-group">

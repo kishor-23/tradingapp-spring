@@ -330,7 +330,7 @@ button[data-astro-cid-xwynydrv].stvb-base.stvb-secondary,
 		
           <div class="logo d-flex align-items-center">
             <img src="assets/favicon.svg" width="32" height="32" alt="Chaintrade logo">
-            <p class="mb-0 ms-2">ChainTrade</p>
+            <a class="mb-0 ms-2" href="/profile" style="color: black; text-decoration: none !important;">ChainTrade</a>
           </div>
           
         

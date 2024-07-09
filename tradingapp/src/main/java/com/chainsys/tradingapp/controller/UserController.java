@@ -117,7 +117,7 @@ public class UserController {
         try {
 
             User user = userOperations.getUserByEmail(email);
-//     emailService.sendWelcomeEmail(user.getEmail(), "Welcome to ChainTrade!");
+    // emailService.sendWelcomeEmail(user.getEmail(), "Welcome to ChainTrade!");
             if (user != null && PasswordHashing.checkPassword(password, user.getPassword())) {
                 session.setAttribute("user", user);
                 return "redirect:/profile";
