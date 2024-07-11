@@ -1,9 +1,7 @@
 package com.chainsys.tradingapp.dao.impl;
 
-import java.io.IOException;
-import java.io.InputStream;
+
 import java.sql.Blob;
-import java.sql.Date;
 import java.sql.SQLException;
 
 import java.util.List;
@@ -17,9 +15,7 @@ import org.springframework.stereotype.Repository;
 import com.chainsys.tradingapp.dao.UserDAO;
 import com.chainsys.tradingapp.mapper.UserRowMapper;
 import com.chainsys.tradingapp.model.User;
-import com.chainsys.tradingapp.util.PasswordHashing;
 
-import jakarta.servlet.http.HttpServletRequest;
 
 
 

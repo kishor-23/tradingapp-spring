@@ -1,15 +1,11 @@
 package com.chainsys.tradingapp.controller;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,17 +19,17 @@ import com.chainsys.tradingapp.model.Stock;
 public class StockController {
 
     private final StockDAO stockOperations;
-    private final JdbcTemplate jdbcTemplate;
+	 private static final String SYMBOL = "symbol";
+
 
     @Autowired
-    public StockController(StockImpl stockImpl, JdbcTemplate jdbcTemplate) {
+    public StockController(StockImpl stockImpl) {
         this.stockOperations = stockImpl;
-        this.jdbcTemplate = jdbcTemplate;
     }
 
     @GetMapping("/stockDetail")
     public String getStockDetail(@RequestParam("symbol") String symbol, Model model) {
-        model.addAttribute("symbol", symbol);
+        model.addAttribute(SYMBOL , symbol);
         return "viewstocks.jsp";
     }
 
@@ -101,7 +97,7 @@ public class StockController {
         }
         Comparator<Stock> comparator = null;
         switch (sortField) {
-            case "symbol":
+            case SYMBOL :
                 comparator = Comparator.comparing(Stock::getSymbol);
                 break;
             case "companyName":
@@ -131,7 +127,7 @@ public class StockController {
         model.addAttribute("itemsPerPage", itemsPerPage);
         model.addAttribute("filterCategory", filterCategory);
         model.addAttribute("searchQuery", searchQuery != null ? searchQuery : "");
-        model.addAttribute("sortField", sortField != null ? sortField : "symbol");
+        model.addAttribute("sortField", sortField != null ? sortField : SYMBOL );
         model.addAttribute("sortOrder", sortOrder);
     }
     

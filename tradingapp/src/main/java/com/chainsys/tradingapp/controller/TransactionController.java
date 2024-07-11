@@ -1,6 +1,5 @@
 package com.chainsys.tradingapp.controller;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,21 +22,24 @@ import jakarta.servlet.http.HttpSession;
 @Controller
 public class TransactionController {
 
-    @Autowired
+  
     private StockDAO stockDAO;
-    @Autowired
+ 
     private EmailService emailService;
 
     private final TransactionDAO transactionDAO;
 
     @Autowired
-    public TransactionController(TransactionDAO transactionDAO) {
+    public TransactionController(TransactionDAO transactionDAO, EmailService emailService,StockDAO stockDAO) {
         this.transactionDAO = transactionDAO;
+        this.emailService=emailService;
+        this.stockDAO=stockDAO;
     }
 
 
     private static final String ERROR_MESSAGE = "error";
     private static final String ERROR_FILE = "fail.jsp";
+    
    @GetMapping("/ordersuccess")
    public String orderSuccess() {
 	   return "ordersuccess.jsp";
@@ -49,7 +51,7 @@ public class TransactionController {
                                     @RequestParam("quantity") int quantity,
                                     @RequestParam("price") double price,
                                     HttpSession session,
-                                    Model model) throws MessagingException, IOException {
+                                    Model model) throws MessagingException {
         if ("buy".equalsIgnoreCase(transactionType)) {
             return handleBuy(userId, stockId, quantity, price, model,session);
         } else if ("sell".equalsIgnoreCase(transactionType)) {
@@ -60,7 +62,7 @@ public class TransactionController {
         }
     }
 
-    private String handleBuy(int userId, int stockId, int quantity, double price, Model model,HttpSession session) throws MessagingException, IOException {
+    private String handleBuy(int userId, int stockId, int quantity, double price, Model model,HttpSession session) throws MessagingException {
         int result = stockDAO.buyStock(userId, stockId, quantity, price);
 
         if (result == 1) {
@@ -76,7 +78,7 @@ public class TransactionController {
         }
     }
 
-    private String handleSell(int userId, int stockId, int quantity, double price, Model model, HttpSession session) throws MessagingException, IOException {
+    private String handleSell(int userId, int stockId, int quantity, double price, Model model, HttpSession session) throws MessagingException{
         int result = stockDAO.sellStock(userId, stockId, quantity, price);
 
         if (result == 1) {

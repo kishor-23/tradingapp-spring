@@ -1,8 +1,7 @@
 <%@page
 	import="org.springframework.web.context.support.WebApplicationContextUtils"%>
 
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-	pageEncoding="ISO-8859-1"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List"%>
 <%@ page import="com.chainsys.tradingapp.model.*"%>
 <%@ page import="com.chainsys.tradingapp.dao.*"%>
@@ -232,7 +231,7 @@ button:hover {
 								class="d-flex justify-content-between align-items-center p-3 ">
 								<p class="mb-0">Total Balance</p>
 								<p class="mb-0">
-									$
+									 ₹
 									<%=user.getBalance()%></p>
 								<button id="btnOpenAddMoneyForm">Add Money</button>
 							</div>
@@ -371,10 +370,16 @@ button:hover {
 										</p>
 										<%
 										List<Nominee> nominees = NomineeOperations.getAllNomineesByUserId(user.getId());
-										%>
-										<p class="mb-0">
+										if(nominees.size()<3){
+											%>
+												<p class="mb-0">
 											<button id="btnOpenNomineeForm">Add Nominee</button>
 										</p>
+										<% 	
+										}
+										%>
+										
+									
 									</div>
 									<div class="card-body p-1 mb-2"
 										style="height: 300px; overflow-y: auto;">
@@ -564,7 +569,7 @@ button:hover {
 								<div class="form-group">
 									<label for="nomineeName">Nominee Name:</label> <input
 										type="text" id="nomineeName" name="nomineeName"
-										class="form-control" required>
+										class="form-control" required pattern="[A-Za-z\s]+" required>
 								</div>
 								<div class="form-group">
 									<label for="relationship">Relationship:</label> <select
@@ -579,7 +584,7 @@ button:hover {
 								</div>
 								<div class="form-group">
 									<label for="phone">Phone:</label> <input type="text"
-										id="phoneno" name="phoneno" class="form-control" required>
+										id="phoneno" name="phoneno" class="form-control"  required pattern="[1-9][0-9]{9}" title="Please enter a valid 10-digit phone number without leading zeros" required>
 								</div>
 								<button type="submit">Add Nominee</button>
 							</form>
@@ -596,14 +601,14 @@ button:hover {
 								<input type="hidden" name="userId" value="<%=user.getId()%>">
 								<div class="form-group">
 									<label for="amount">Amount:</label> <input type="number"
-										id="amount" name="amount" class="form-control" required>
+										id="amount" name="amount" min=1 max=100000 class="form-control" required>
 								</div>
 								<div class="form-group">
 									<label for="paymentMethod">Payment Method:</label> <select
 										id="paymentMethod" name="paymentMethod" class="form-control"
 										required>
 										<option value="card">Card</option>
-										<option value="paypal">PayPal</option>
+										<option value="upi">Upi</option>
 										<option value="bank">Bank Transfer</option>
 									</select>
 								</div>
@@ -629,7 +634,7 @@ button:hover {
 					<label for="editNomineeName">Nominee Name:</label> <input
 						type="text" id="editNomineeName" name="nomineeName"
 						class="form-control" required pattern="[A-Za-z\s]+"
-						title="Nominee Name should contain only letters and spaces.">
+						title="Nominee Name should contain only letters and spaces." required> 
 				</div>
 
 				<div class="form-group">
@@ -647,7 +652,7 @@ button:hover {
 				<div class="form-group">
 					<label for="editPhone">Phone:</label> <input type="text"
 						id="editPhone" name="phoneno" class="form-control" required
-						pattern="[0-9]{10}" title="Phone number should be 10 digits.">
+						pattern="[0-9]{10}" title="Phone number should be 10 digits." required>
 				</div>
 
 				<button type="submit">Update Nominee</button>

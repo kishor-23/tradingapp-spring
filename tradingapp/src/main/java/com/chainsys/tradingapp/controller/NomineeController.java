@@ -5,7 +5,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
 import com.chainsys.tradingapp.dao.NomineeDAO;
 import com.chainsys.tradingapp.dao.UserDAO;
@@ -26,6 +25,7 @@ import java.util.List;
 public class NomineeController {
 	private NomineeDAO nomineeOperations;
 	private UserDAO userOperations;
+	 private static final String REDIRECT_PROFILE = "redirect:/profile";
 
 	@Autowired
 	public NomineeController(NomineeImpl nomineeImpl, UserImpl userImpl) {
@@ -36,37 +36,36 @@ public class NomineeController {
     public String listNominees(HttpSession session, Model model) throws SQLException, ClassNotFoundException {
         User user = (User) session.getAttribute("user");
         if (user == null) {
-            return "redirect:/login";
+            return REDIRECT_PROFILE;
         }
 
         User updatedUser = userOperations.getUserByEmail(user.getEmail());
         List<Nominee> listNominees = nomineeOperations.getAllNomineesByUserId(user.getId());
         session.setAttribute("user", updatedUser);
         model.addAttribute("listNominees", listNominees);
-        return "redirect:/profile";
+        return REDIRECT_PROFILE;
     }
 	
     @PostMapping("/add")
-    public String addNominee(@Valid @ModelAttribute Nominee nominee, HttpSession session) throws SQLException, ClassNotFoundException {
+    public String addNominee(@Valid @ModelAttribute Nominee nominee, HttpSession session)  {
         User user = (User) session.getAttribute("user");
         if (user == null) {
             return "redirect:/login";
         }
-
         nominee.setUserId(user.getId());
         nomineeOperations.addNominee(nominee);
-        return "redirect:/profile";
+        return REDIRECT_PROFILE;
     }
 
     @PostMapping("/update")
-    public String updateNominee(@Valid @ModelAttribute Nominee nominee) throws SQLException, ClassNotFoundException {
+    public String updateNominee(@Valid @ModelAttribute Nominee nominee)  {
         nomineeOperations.updateNominee(nominee);
-        return "redirect:/profile";
+        return REDIRECT_PROFILE;
     }
 
     @PostMapping("/delete")
-    public String deleteNominee(@RequestParam int nomineeId) throws SQLException, ClassNotFoundException {
+    public String deleteNominee(@RequestParam int nomineeId) {
         nomineeOperations.deleteNominee(nomineeId);
-        return "redirect:/profile";
+        return REDIRECT_PROFILE;
     }
 }

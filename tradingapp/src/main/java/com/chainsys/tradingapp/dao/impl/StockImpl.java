@@ -18,8 +18,15 @@ public class StockImpl implements StockDAO {
     private static final String CALL_BUY_STOCK_PROCEDURE = "{CALL buyStockProcedure(?, ?, ?, ?, ?)}";
     private static final String CALL_SELL_STOCK_PROCEDURE = "{CALL sellStockProcedure(?, ?, ?, ?, ?, ?)}";
 
-    @Autowired
+  
     private JdbcTemplate jdbcTemplate;
+    
+    @Autowired
+    public StockImpl(JdbcTemplate jdbcTemplate) {
+    	this.jdbcTemplate=jdbcTemplate;
+    	
+    }
+    
 
     // RowMapper for Stock objects
     private RowMapper<Stock> stockRowMapper = (rs, rowNum) -> new Stock(
@@ -51,7 +58,8 @@ public class StockImpl implements StockDAO {
             cs.setDouble(4, price);
             cs.registerOutParameter(5, Types.INTEGER);
             cs.execute();
-            return cs.getInt(5);
+            Integer result = cs.getInt(5);
+            return result != null ? result : -1; // Return -1 if result is null
         });
     }
 
@@ -65,9 +73,11 @@ public class StockImpl implements StockDAO {
             cs.registerOutParameter(5, Types.INTEGER);
             cs.registerOutParameter(6, Types.DECIMAL);
             cs.execute();
-            return cs.getInt(5);
+            Integer result = cs.getInt(5);
+            return result != null ? result : -1; // Return -1 if result is null
         });
     }
+
 
     @Override
     public double stockPriceById(int stockId) {

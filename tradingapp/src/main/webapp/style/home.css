@@ -3,7 +3,6 @@
   :root{
   --navcolor:white;
   --navfont:black;
-  /* --green:#06C167; */
   --box-shadow:0 .5rem 1rem rgba(0,0,0.1)
 }
   
@@ -26,6 +25,8 @@ body{
   align-items: center;
   height: 98vh;
   background-color: #f9f9f9;
+    padding-inline: 12px;
+  
 }
 
 .widget-container {
@@ -41,14 +42,9 @@ body{
 
 .footer-top { 
   background-color: var(--eerie-rgb(0, 0, 0)-1); 
-  /* padding-block: 80px 50px; */
 } 
 
-@media (min-width: 1200px){ 
-.footer-top { 
-  /* padding-block: 100px 90px; */
-} 
-}     
+    
 
 *,:before,:after { 
   margin: 0; 
@@ -59,9 +55,6 @@ body{
 
 
 
-.container { 
-  padding-inline: 12px;
-} 
 
 [data-section] > *  { 
   transform: translateY(50px); 
@@ -132,11 +125,10 @@ body{
 a { 
   text-decoration: none; 
   color: inherit;
+    display: block;
+  
 } 
 
-a { 
-  display: block;
-} 
 
 
 
@@ -175,11 +167,11 @@ li {
 
 img { 
   display: block;
+    height: auto;
+  
 } 
 
-img { 
-  height: auto;
-} 
+
 
 .footer-list-title { 
   color: var(--#f7e4e4); 

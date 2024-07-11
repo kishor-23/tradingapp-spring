@@ -16,6 +16,7 @@ import java.io.InputStream;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,6 +31,7 @@ import com.chainsys.tradingapp.dao.impl.UserImpl;
 import com.chainsys.tradingapp.model.User;
 import com.chainsys.tradingapp.util.EmailService;
 import com.chainsys.tradingapp.util.PasswordHashing;
+import com.chainsys.tradingapp.validation.Validation;
 
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,20 +40,33 @@ import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class UserController {
+	
     private final UserDAO userOperations;
-    @Autowired
     private EmailService emailService;
+    private static final String REGISTER_PAGE = "register.jsp";
+    private static final String LOGIN_PAGE = "login.jsp";
+    private static final String PROFILE_PAGE="redirect:/profile";
+    private static final String ERROR_MSG="Error";
+
     @Autowired
-    public UserController(UserImpl userImpl) {
+    public UserController(UserImpl userImpl, EmailService emailService) {
         this.userOperations = userImpl;
+        this.emailService=emailService;
     }
     @GetMapping("/profile")
     public String profile(HttpSession session) throws ClassNotFoundException, SQLException {
-        User updatedUser = userOperations.getUserByEmail(((User) session.getAttribute("user")).getEmail());
+        User currentUser = (User) session.getAttribute("user");
+        
+        if (currentUser == null) {
+            return "redirect:/login"; 
+        }
+        
+        User updatedUser = userOperations.getUserByEmail(currentUser.getEmail());
         session.setAttribute("user", updatedUser);
 
-    	return "profile.jsp";
+        return "profile.jsp";
     }
+
     @RequestMapping("/")
     public String home() {
     	return "home.jsp";
@@ -60,77 +75,130 @@ public class UserController {
     @GetMapping("/register")
     public String showRegisterForm(Model model) {
         model.addAttribute("user", new User());
-        return "register.jsp";
+        return REGISTER_PAGE;
     }
 
-    @PostMapping("/register")
-    public String registerUser(@ModelAttribute User user, @RequestParam("profile") MultipartFile filePart, HttpServletRequest request, Model model) throws IOException, SQLException, MessagingException {
-        // Extract user details from the form
-        String dobString = request.getParameter("dob");
-        Date dob = null;
 
+    @PostMapping("/register")
+    public String registerUser(
+            @ModelAttribute User user,
+            @RequestParam("profile") MultipartFile filePart,
+            HttpServletRequest request,
+            Model model) throws IOException, SQLException, MessagingException {
+
+        Date dob = parseDateOfBirth(request.getParameter("dob"), model);
+        Blob profilePicture = processProfilePicture(filePart, model);
+
+        if (hasValidationErrors(user, model)) {
+            return REGISTER_PAGE;
+        }
+
+        setUserDetails(user, dob, profilePicture);
+        return registerNewUser(user, model);
+    }
+
+    private Date parseDateOfBirth(String dobString, Model model) {
         if (dobString != null && !dobString.isEmpty()) {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             try {
-                dob = new Date(sdf.parse(dobString).getTime());
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                return new Date(sdf.parse(dobString).getTime());
             } catch (ParseException e) {
                 e.printStackTrace();
+                model.addAttribute("dobError", "Invalid date format.");
             }
         }
+        return null;
+    }
 
-        Blob profilePicture = null;
+    private Blob processProfilePicture(MultipartFile filePart, Model model) throws SQLException {
         if (filePart != null && !filePart.isEmpty()) {
             try (InputStream inputStream = filePart.getInputStream()) {
-                profilePicture = new SerialBlob(inputStream.readAllBytes());
+                return new SerialBlob(inputStream.readAllBytes());
             } catch (SerialException | IOException e) {
                 e.printStackTrace();
+                model.addAttribute("profilePictureError", "Error processing profile picture.");
             }
         }
+        return null;
+    }
 
-        double balance = 100.00;
+    private boolean hasValidationErrors(User user, Model model) {
+        boolean hasErrors = false;
 
-        // Hash the password before storing
-        String hashedPassword = PasswordHashing.hashPassword(user.getPassword());
+        if (!Validation.isValidName(user.getName())) {
+            model.addAttribute(ERROR_MSG, "Invalid name format. Only letters and spaces are allowed.");
+            hasErrors = true;
+        }
 
+        if (!Validation.isValidPhoneNo(user.getPhone())) {
+            model.addAttribute(ERROR_MSG, "Invalid phone number format. Should be 10 digits.");
+            hasErrors = true;
+        }
+
+        if (!Validation.isValidEmail(user.getEmail())) {
+            model.addAttribute(ERROR_MSG, "Invalid email format.");
+            hasErrors = true;
+        }
+
+        if (!Validation.isValidPassword(user.getPassword())) {
+            model.addAttribute(ERROR_MSG, "Invalid password format. Must contain at least one number, one uppercase letter, one lowercase letter, one special character, and be at least 6 characters long.");
+            hasErrors = true;
+        }
+
+        if (!Validation.isValidPanCard(user.getPancardno())) {
+            model.addAttribute(ERROR_MSG, "Invalid PAN card number format. Should be 5 uppercase letters, 4 digits, and 1 uppercase letter.");
+            hasErrors = true;
+        }
+
+        return hasErrors;
+    }
+
+    private void setUserDetails(User user, Date dob, Blob profilePicture) {
         user.setDob(dob);
-        user.setPassword(hashedPassword);
-        user.setBalance(balance);
-        user.setProfilePicture(profilePicture); // set the profile picture blob
+        user.setPassword(PasswordHashing.hashPassword(user.getPassword()));
+        user.setBalance(100.00);
+        user.setProfilePicture(profilePicture);
+    }
 
+    private String registerNewUser(User user, Model model) throws MessagingException, IOException {
         boolean userExists = userOperations.checkUserAlreadyExists(user.getEmail());
-        if (!userExists) {
-            userOperations.addUser(user);
-            emailService.sendWelcomeEmail(user.getEmail(), "Welcome to ChainTrade!");
 
-            return "redirect:/login?registered=true";
+        if (!userExists) {
+            try {
+                userOperations.addUser(user);
+                emailService.sendWelcomeEmail(user.getEmail(), "Welcome to ChainTrade!");
+                return "redirect:/login?registered=true";
+            } catch (DuplicateKeyException e) {
+                model.addAttribute(ERROR_MSG, "Registration failed. User with this PAN card already exists.");
+                return REGISTER_PAGE;
+            }
         } else {
-            model.addAttribute("errorMessage", "Registration failed. User already exists. Please login.");
-            return "register.jsp";
+            model.addAttribute(ERROR_MSG, "Registration failed. User already exists. Please login.");
+            return REGISTER_PAGE;
         }
     }
 
     @GetMapping("/login")
     public String showLoginForm() {
-        return "login.jsp";
+        return LOGIN_PAGE;
     }
 
     @PostMapping("/login")
-    public String loginUser(@RequestParam String email, @RequestParam String password, HttpSession session, Model model) throws ClassNotFoundException, MessagingException, IOException {
+    public String loginUser(@RequestParam String email, @RequestParam String password, HttpSession session, Model model) throws ClassNotFoundException  {
         try {
 
             User user = userOperations.getUserByEmail(email);
-    // emailService.sendWelcomeEmail(user.getEmail(), "Welcome to ChainTrade!");
             if (user != null && PasswordHashing.checkPassword(password, user.getPassword())) {
                 session.setAttribute("user", user);
-                return "redirect:/profile";
+                return PROFILE_PAGE;
             } else {
                 model.addAttribute("msg", "Invalid email or password");
-                return "login.jsp";
+                return LOGIN_PAGE;
             }
         } catch (SQLException e) {
             e.printStackTrace();
             model.addAttribute("msg", "An error occurred. Please try again later.");
-            return "login.jsp";
+            return LOGIN_PAGE;
         }
     }
 
@@ -143,7 +211,7 @@ public class UserController {
             userOperations.addMoneyToUser(userId, amount);
             User updatedUser = userOperations.getUserByEmail(((User) session.getAttribute("user")).getEmail());
             session.setAttribute("user", updatedUser);
-            return "redirect:/profile";
+            return PROFILE_PAGE;
         } catch (SQLException e) {
             e.printStackTrace();
             model.addAttribute("msg", "An error occurred. Please try again later.");
@@ -170,7 +238,7 @@ public class UserController {
         }
 
         userOperations.updateUserProfilePicture(userId, profilePicture);
-        return "redirect:/profile";
+        return PROFILE_PAGE;
     }
     
     @GetMapping("/profilePicture")

@@ -26,16 +26,14 @@
 
 .logo a{ 
   padding-top: 14px;
-    color: var(--#f7e4e4); 
+    color: inherit var(--#f7e4e4); 
     font-size: 4rem; 
-    font-weight: var(--fw-700); 
+    font-weight: lighter var(--fw-700); 
     display: flex; 
     align-items: center; 
     gap: 5px;
-    font-weight: lighter;
     padding-bottom:10px;
     text-decoration: none; 
-  color: inherit;
 } 
 a:hover{ 
     text-emphasis: none;
@@ -48,7 +46,6 @@ a:hover{
   padding: 0;
   
   text-decoration: none;
-  /* font-family:sans-serif; */
   box-sizing: border-box;
   font-family: 'Poppins', sans-serif;
 

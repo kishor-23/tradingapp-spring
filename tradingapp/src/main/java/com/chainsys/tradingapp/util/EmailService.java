@@ -16,9 +16,12 @@ import java.nio.file.Paths;
 public class EmailService {
 
  
-    @Autowired
+  
     private JavaMailSender mailSender;
-
+    @Autowired
+    public EmailService(JavaMailSender mailSender) {
+    	this.mailSender=mailSender;
+    }
   
     public void sendWelcomeEmail(String toEmail, String subject) throws MessagingException, IOException {
         MimeMessage message = mailSender.createMimeMessage();
@@ -33,9 +36,7 @@ public class EmailService {
 
         helper.setText(htmlContent, true);
 
-        // Add logo image as an inline resource (if needed)
-        // ClassPathResource resource = new ClassPathResource("static/images/logo.png");
-        // helper.addInline("logoImage", resource);
+      
 
         mailSender.send(message);
     }

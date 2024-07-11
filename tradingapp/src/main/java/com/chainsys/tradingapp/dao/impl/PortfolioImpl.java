@@ -44,7 +44,7 @@ public class PortfolioImpl implements PortfolioDAO {
                      "WHERE p.user_id = ? " +
                      "GROUP BY s.cap_category";
 
-        return jdbcTemplate.query(sql, new Object[]{userId, userId}, new CategoryRowMapper());
+        return jdbcTemplate.query(sql,  new CategoryRowMapper(),new Object[]{userId, userId});
     }
 
 

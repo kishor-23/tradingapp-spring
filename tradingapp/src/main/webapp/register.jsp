@@ -25,7 +25,7 @@
                 </div>
                 <p id="heading">Create your account</p>
                   <% 
-                  String msg = (String) request.getAttribute("errorMessage");
+                  String msg = (String) request.getAttribute("Error");
        if(msg!=null){
     	   
        
