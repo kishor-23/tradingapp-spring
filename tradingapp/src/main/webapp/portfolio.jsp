@@ -8,8 +8,9 @@
 <%@ page import="com.chainsys.tradingapp.model.*"%>
 <%@ page import="com.chainsys.tradingapp.dao.impl.*"%>
 <%@ page import="com.chainsys.tradingapp.dao.*"%>
-<%@ page import="org.springframework.context.ApplicationContext"%>
-<%@ page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
+<%@ page import="java.util.stream.Collectors"%>
+<%@ page import="java.util.stream.Stream"%>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Portfolio</title>
@@ -22,80 +23,88 @@
     html, body, .intro {
         height: 100%;
     }
-    .card {
-        display: flex;
-        flex-direction: column;
-        background-color: #fff;
-        border-radius: 15px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        width: 80%;
-        max-width: 600px;
-        padding: 20px;
-        text-align: center;
-        font-family: Arial, sans-serif;
-        margin: 20px auto;
-    }
-    .portfolio-container {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        margin-top: 20px;
-    }
-    .portfolio {
-        flex: 1;
-        padding-right: 20px;
-        margin-top:60px;
-    }
-    .chart-container {
-        flex: 1;
-        max-width: 400px;
-        height: 400px;
-        padding: 20px;
-        margin-right:20px;
-        background-color: #fff;
-        border-radius: 15px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-    .chart-container canvas {
-        width: 100% !important;
-        height: 90% !important;
-    }
-    .row {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 10px;
-    }
-    .label {
-        color: #8e8e8e;
-        font-size: 16px;
-    }
-    .value {
-        color: #000;
-        font-size: 28px;
-        font-weight: bold;
-    }
-    .separator {
-        border-top: 1px solid #e0e0e0;
-        margin: 20px 0;
-    }
-    .pnl, .percentage {
-        display: inline-block;
-        margin-top: 10px;
-    }
-    .pnl {
-        font-size: 28px;
-        font-weight: bold;
-    }
-    .r1 {
-        position: relative;
-        left: -184px;
-        top: 40px;
-    }
-    .r2 {
-        position: relative;
-        top: -25px;
-        left: 174px;
-    }
+.card {
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 80%;
+    max-width: 400px;
+    padding: 20px;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    margin: 20px auto;
+    height:400px;
+    
+}
+.portfolio-container {
+    display: flex;
+    
+    align-items: center;
+    margin-top: 20px;
+     flex-wrap: wrap;
+}
+.portfolio {
+    width: 100%;
+    margin-bottom: 20px;
+}
+.chart-container {
+    width: 100%;
+    max-width: 400px;
+    height: 400px;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.chart-container canvas {
+    width: 100% !important;
+    height: 90% !important;
+}
+.row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+.label {
+    color: #8e8e8e;
+    font-size: 16px;
+}
+.value {
+    color: #000;
+    font-size: 28px;
+    font-weight: bold;
+}
+.separator {
+    border-top: 1px solid #e0e0e0;
+    margin: 20px 0;
+}
+.pnl, .percentage {
+    display: inline-block;
+    margin-top: 10px;
+}
+.pnl {
+    font-size: 28px;
+    font-weight: bold;
+}
+.percentage {
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 10px;
+    padding: 5px 10px;
+    margin-left: 10px;
+}
+.pnl.positive, .percentage.positive {
+    color: #388e3c; /* green color for profit */
+    background-color: #e8f5e9; /* light green background for profit */
+}
+.pnl.negative, .percentage.negative {
+    color: #d32f2f; /* red color for loss */
+    background-color: #fbeaea; /* light red background for loss */
+}
+
+
     .percentage {
         font-size: 18px;
         font-weight: bold;
@@ -189,6 +198,7 @@ String pnlClass = (pnlValue >= 0) ? "positive" : "negative";
 
 List<Category> categoryQuantities = portfolioOperations.getCategoryQuantities(user.getId());
 
+// Calculate the cap category percentages
 int smallCapPercentage = 0;
 int mediumCapPercentage = 0;
 int largeCapPercentage = 0;
@@ -210,6 +220,16 @@ for (Category cq : categoryQuantities) {
             break;
     }
 }
+
+// Retrieve the sector quantities
+List<Category> sectorQuantities = portfolioOperations.getSectorCategoryQuantities(user.getId());
+
+// Prepare the data for the chart
+Map<String, Integer> sectorData = new HashMap<>();
+for (Category category : sectorQuantities) {
+    sectorData.put(category.getCapCategory(), category.getTotalQuantity());
+}
+
 %>
 <body>
 <header data-astro-cid-rafkve5z>
@@ -227,7 +247,17 @@ for (Category cq : categoryQuantities) {
 
 <div class="portfolio-container">
 
-    <div class="portfolio card">
+   
+    <div class="chart-container">
+        <p>Investment details in each cap</p>
+        <canvas id="capChart"></canvas>
+  
+    </div>
+     <div class="portfolio card">
+        <div class="value">Portfolio</div>
+                <div class="separator"></div>
+        
+        
         <div class="row">
             <div class="r1">
                 <div class="label">Invested</div>
@@ -240,13 +270,15 @@ for (Category cq : categoryQuantities) {
         </div>
         <div class="separator"></div>
         <div>
+        
             <div class="pnl ">P&L   :<%=String.format("%.2f", pnlValue)%></div>
             <div class="percentage <%=pnlClass%>"><%=String.format("%.2f", pnlPercentage)%> %</div>
         </div>
     </div>
-    <div class="chart-container">
-    <p>Investment details in each cap</p>
-        <canvas id="capChart"></canvas>
+    <div class="chart-container ">
+     
+        <p>Investment details by sector</p>
+        <canvas id="sectorChart"></canvas>
     </div>
 </div>
 
@@ -304,16 +336,27 @@ for (Category cq : categoryQuantities) {
         </div>
     </div>
 </section>
+<div>
+</div>
+<%-- <div class="portfolio-container">
+<div class="data">
+ <%
+                                    for (Portfolio portfolio : portfoliolist) {
+                                    	%>
+                                    
+ <p class="sc-embed" data-width="500px" data-orders="%5B%7B%22type%22%3A%22sell%22%2C%22quantity%22%3A10%2C%22ticker%22%3A%22<%=portfolio.getSymbol()%>%22%7D%5D" data-cardsize="big" data-withtt="false" data-withsearch="false" style="width:500px;min-height:300px;display:flex;align-items:center;justify-content:center"> <strong>loading widget to trade ITC</strong> </p> <script async src="https://www.gateway-tt.in/assets/embed.js"></script> 
+<%} %>
+</div>
 
-
+</div> --%>
 <script>
 window.onload = function() {
-    const smallCapPercentage =<%=smallCapPercentage%>; 
+    const smallCapPercentage = <%=smallCapPercentage%>; 
     const mediumCapPercentage = <%=mediumCapPercentage%>;
-    const largeCapPercentage =<%=largeCapPercentage%>;
+    const largeCapPercentage = <%=largeCapPercentage%>;
 
-    const ctx = document.getElementById('capChart').getContext('2d');
-    new Chart(ctx, {
+    const ctxCap = document.getElementById('capChart').getContext('2d');
+    new Chart(ctxCap, {
         type: 'doughnut',
         data: {
             labels: ['Small Cap', 'Medium Cap', 'Large Cap'],
@@ -336,9 +379,38 @@ window.onload = function() {
             }
         }
     });
-};
 
+    // Data for the sector chart
+    const sectorLabels = [<%= sectorData.keySet().stream().map(key -> "\"" + key + "\"").collect(Collectors.joining(",")) %>];
+    const sectorValues = [<%= sectorData.values().stream().map(Object::toString).collect(Collectors.joining(",")) %>];
+
+    const ctxSector = document.getElementById('sectorChart').getContext('2d');
+    new Chart(ctxSector, {
+        type: 'doughnut',
+        data: {
+            labels: sectorLabels,
+            datasets: [{
+                label: 'Sector Percentages',
+                data: sectorValues,
+                backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'],
+                hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40']
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    enabled: true,
+                }
+            }
+        }
+    });
+};
 </script>
+
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>

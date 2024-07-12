@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import com.chainsys.tradingapp.dao.StockDAO;
+import com.chainsys.tradingapp.exception.StockNotFoundException;
 import com.chainsys.tradingapp.model.Stock;
 
 @Repository
@@ -51,21 +52,21 @@ public class StockImpl implements StockDAO {
 
     @Override
     public int buyStock(int userId, int stockId, int quantity, double price) {
-        return jdbcTemplate.execute(CALL_BUY_STOCK_PROCEDURE, (CallableStatementCallback<Integer>) cs -> {
+        Integer result = jdbcTemplate.execute(CALL_BUY_STOCK_PROCEDURE, (CallableStatementCallback<Integer>) cs -> {
             cs.setInt(1, userId);
             cs.setInt(2, stockId);
             cs.setInt(3, quantity);
             cs.setDouble(4, price);
             cs.registerOutParameter(5, Types.INTEGER);
             cs.execute();
-            Integer result = cs.getInt(5);
-            return result != null ? result : -1; // Return -1 if result is null
+            return cs.getInt(5);
         });
+        return result != null ? result : -1;
     }
 
     @Override
     public int sellStock(int userId, int stockId, int quantity, double price) {
-        return jdbcTemplate.execute(CALL_SELL_STOCK_PROCEDURE, (CallableStatementCallback<Integer>) cs -> {
+        Integer result = jdbcTemplate.execute(CALL_SELL_STOCK_PROCEDURE, (CallableStatementCallback<Integer>) cs -> {
             cs.setInt(1, userId);
             cs.setInt(2, stockId);
             cs.setInt(3, quantity);
@@ -73,15 +74,27 @@ public class StockImpl implements StockDAO {
             cs.registerOutParameter(5, Types.INTEGER);
             cs.registerOutParameter(6, Types.DECIMAL);
             cs.execute();
-            Integer result = cs.getInt(5);
-            return result != null ? result : -1; // Return -1 if result is null
+            return cs.getInt(5);
         });
+        return result != null ? result : -1;
     }
+
 
 
     @Override
     public double stockPriceById(int stockId) {
         String sql = "SELECT current_stock_price FROM stocks WHERE stock_id = ?";
-        return jdbcTemplate.queryForObject(sql, Double.class, stockId);
+        Double stockPrice = jdbcTemplate.queryForObject(sql, Double.class, stockId);
+        
+        if (stockPrice == null) {
+            throw new StockNotFoundException("Stock with ID " + stockId + " not found.");
+        }
+
+        return stockPrice;
     }
+   
+  
+   
+
+
 }

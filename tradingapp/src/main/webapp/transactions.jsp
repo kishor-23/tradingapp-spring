@@ -11,9 +11,24 @@
     <link href="https://stackpath.bootstrapcdn.com/bootswatch/4.3.1/cosmo/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/v/dt/dt-1.11.5/datatables.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
     <title>Transactions</title>
 </head>
+<style>
+    header[data-astro-cid-rafkve5z] {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        border-bottom: 1px solid #e0e3eb;
+        justify-content: space-between;
+        padding: 10px;
+        flex-direction: row;
+        z-index: 1;
+    }
+    </style>
 <body>
+
 <% 
 if (session == null || session.getAttribute("user") == null) {
     response.sendRedirect("login.jsp");
@@ -23,8 +38,20 @@ ApplicationContext context = WebApplicationContextUtils.getWebApplicationContext
 
 User user = (User) session.getAttribute("user");
 %>
+<header data-astro-cid-rafkve5z>
+    <div class="d-flex justify-content-start">
+        <button onclick="window.history.back()" class="btn">
+            <i class="fas fa-arrow-left"></i> Back
+        </button>
+    </div>
+    
+    <div class="logo d-flex align-items-center">
+        <img src="assets/favicon.svg" width="32" height="32" alt="Chaintrade logo">
+        <a class="mb-0 ms-2" href="/profile" style="color: black; text-decoration: none !important;">ChainTrade</a>
+    </div>
+</header>
 <div class="container">
-    <h1>Transactions by <%= user.getName() %></h1>
+    <h1>Transactions Details</h1>
     <div class="row">
         <div class="col-md-4">
             <label for="minDate">From:</label>
@@ -61,12 +88,12 @@ User user = (User) session.getAttribute("user");
                             <td><%= transaction.getUserId() %></td>
                             <td><%= transaction.getStockId() %></td>
                             <td><%= transaction.getShares() %></td>
-                            <td><%= transaction.getPrice() %></td>
+                            <td>₹<%= transaction.getPrice() %></td>
                             <td><%= transaction.getTransactionType() %></td>
                             <td><%= transaction.getTimestamp() %></td>
                             <td><%= transaction.getStockSymbol() %></td>
                             <td><%= transaction.getCompanyName() %></td>
-                            <td><%= transaction.getProfitOrLoss() %></td>
+                            <td>₹<%= transaction.getProfitOrLoss() %></td>
                         </tr>
             <%
                     }

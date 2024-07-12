@@ -95,21 +95,8 @@ public class StockController {
         if (sortField == null) {
             return;
         }
-        Comparator<Stock> comparator = null;
-        switch (sortField) {
-            case SYMBOL :
-                comparator = Comparator.comparing(Stock::getSymbol);
-                break;
-            case "companyName":
-                comparator = Comparator.comparing(Stock::getCompanyName);
-                break;
-            case "currentStockPrice":
-                comparator = Comparator.comparing(Stock::getCurrentStockPrice);
-                break;
-            case "capCategory":
-                comparator = Comparator.comparing(Stock::getCapCategory);
-                break;
-        }
+        Comparator<Stock> comparator =  Comparator.comparing(Stock::getCurrentStockPrice);
+        
         if (comparator != null) {
             if (!sortOrder) {
                 comparator = comparator.reversed();

@@ -4,7 +4,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.chainsys.tradingapp.model.User;
 

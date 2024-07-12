@@ -44,8 +44,22 @@ public class PortfolioImpl implements PortfolioDAO {
                      "WHERE p.user_id = ? " +
                      "GROUP BY s.cap_category";
 
-        return jdbcTemplate.query(sql,  new CategoryRowMapper(),new Object[]{userId, userId});
+        return jdbcTemplate.query(sql,  new CategoryRowMapper(),userId, userId);
     }
+    @Override
+    public List<Category> getSectorCategoryQuantities(int userId) {
+        String sql = "SELECT " +
+                     "s.sector as cap_category, " +
+                     "SUM(p.quantity) AS total_quantity, " +
+                     "(SELECT SUM(quantity) FROM portfolio WHERE user_id = ?) AS user_total_quantity " +
+                     "FROM portfolio p " +
+                     "JOIN stocks s ON p.stock_id = s.stock_id " +
+                     "WHERE p.user_id = ? " +
+                     "GROUP BY s.sector";
+
+        return jdbcTemplate.query(sql, new CategoryRowMapper(), userId, userId);
+    }
+
 
 
 

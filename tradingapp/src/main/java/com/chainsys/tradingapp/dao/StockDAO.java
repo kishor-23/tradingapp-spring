@@ -12,4 +12,6 @@ public interface StockDAO {
   public  double stockPriceById(int stockId);
   public  int buyStock(int userId, int stockId, int quantity, double price) ;
   public  int sellStock(int userId, int stockId, int quantity, double price) ;
+
+
 }
