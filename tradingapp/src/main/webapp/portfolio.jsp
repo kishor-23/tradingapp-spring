@@ -10,7 +10,9 @@
 <%@ page import="com.chainsys.tradingapp.dao.*"%>
 <%@ page import="java.util.stream.Collectors"%>
 <%@ page import="java.util.stream.Stream"%>
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Portfolio</title>
@@ -168,6 +170,7 @@
         z-index: 1;
     }
 </style>
+
 </head>
 <%
 if (session == null || session.getAttribute("user") == null) {
@@ -323,6 +326,22 @@ for (Category category : sectorQuantities) {
                                          }
                                          %></td>
                                         <td><%=portfolio.getTotal()%></td>
+                                         <td>
+                    <button class="btn btn-success" data-toggle="modal" data-target="#buyModal" 
+                            data-symbol="<%= portfolio.getSymbol() %>" 
+                            data-price="<%= currentPrice %>"
+                            data-stock-id="<%= portfolio.getStockId() %>">
+                        Buy
+                    </button>
+                </td>
+                <td>
+                    <button class="btn btn-danger" data-toggle="modal" data-target="#sellModal" 
+                           data-symbol="<%= portfolio.getSymbol() %>" 
+                            data-price="<%= currentPrice %>"
+                            data-stock-id="<%= portfolio.getStockId() %>">
+                        Sell
+                    </button>
+                </td>
                                     </tr>
                                     <%
                                     }
@@ -336,8 +355,149 @@ for (Category category : sectorQuantities) {
         </div>
     </div>
 </section>
-<div>
+
+
+
+
+
+<!-- Buy Modal -->
+<div class="modal fade" id="buyModal" tabindex="-1" role="dialog" aria-labelledby="buyModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form action="StockTransaction" method="post">
+              <input type="hidden" name="transactionType" value="buy">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="buyModalLabel">Buy Stock</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group mb-3">
+                        <label for="stockSymbol" class="font-weight-bold">Stock Symbol</label>
+                        <input type="text" class="form-control" id="stockSymbol" name="symbol" readonly>
+                    </div>
+                    <div class="form-group mb-3">
+                        <input type="number" class="form-control" id="stockId" name="stockId" readonly>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="userid" class="font-weight-bold">User ID</label>
+                        <input type="number" class="form-control" id="userid" value="<%= user.getId() %>" name="userid" readonly>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="stockPrice" class="font-weight-bold">Current Price</label>
+                        <input type="text" class="form-control" id="stockPrice" name="price" readonly>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="quantity" class="font-weight-bold">Quantity</label>
+                        <input type="number" class="form-control" id="quantity" name="quantity" min="1" max="10" value="1" required>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="totalPrice" class="font-weight-bold">Total Price</label>
+                        <input type="text" class="form-control" id="totalPrice" name="totalPrice" readonly>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Buy</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
+
+<!-- Sell Modal -->
+<div class="modal fade" id="sellModal" tabindex="-1" role="dialog" aria-labelledby="sellModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form action="StockTransaction" method="post">
+            <input type="hidden" name="transactionType" value="sell">
+            
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="sellModalLabel">Sell Stock</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group mb-3">
+                        <label for="sellStockSymbol" class="font-weight-bold">Stock Symbol</label>
+                        <input type="text" class="form-control" id="sellStockSymbol" name="symbol" readonly>
+                    </div>
+                    <div class="form-group mb-3">
+                        <input type="hidden" class="form-control" id="sellStockId" name="stockId" readonly>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="sellUserId" class="font-weight-bold">User ID</label>
+                        <input type="number" class="form-control" id="sellUserId" value="<%= user.getId() %>" name="userid" readonly>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="sellStockPrice" class="font-weight-bold">Current Price</label>
+                        <input type="text" class="form-control" id="sellStockPrice" name="price" readonly>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="sellQuantity" class="font-weight-bold">Quantity</label>
+                        <input type="number" class="form-control" id="sellQuantity" name="quantity" min="1" max="10" value="1" required>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="sellTotalPrice" class="font-weight-bold">Total Price</label>
+                        <input type="text" class="form-control" id="sellTotalPrice" name="totalPrice" readonly>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-danger">Sell</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
+<script>
+// Handle Buy Button Click
+$('#buyModal').on('show.bs.modal', function (event) {
+    let button = $(event.relatedTarget);
+    let symbol = button.data('symbol');
+    let price = button.data('price');
+    let stockId = button.data('stock-id');
+    let modal = $(this);
+    modal.find('.modal-body #stockSymbol').val(symbol);
+    modal.find('.modal-body #stockPrice').val(price);
+    modal.find('.modal-body #quantity').val(1);
+    modal.find('.modal-body #totalPrice').val(price);
+    modal.find('.modal-body #stockId').val(stockId);
+});
+// Handle Sell Button Click
+$('#sellModal').on('show.bs.modal', function (event) {
+    let button = $(event.relatedTarget);
+    let symbol = button.data('symbol');
+    let price = button.data('price');
+    let stockId = button.data('stock-id');
+    let modal = $(this);
+    modal.find('.modal-body #sellStockSymbol').val(symbol);
+    modal.find('.modal-body #sellStockPrice').val(price);
+    modal.find('.modal-body #sellQuantity').val(1);
+    modal.find('.modal-body #sellTotalPrice').val(price);
+    modal.find('.modal-body #sellStockId').val(stockId);
+});
+
+// Update Total Price when Buy Quantity Changes
+document.getElementById('quantity').addEventListener('input', function() {
+    let price = parseFloat(document.getElementById('stockPrice').value) || 0;
+    let quantity = parseInt(this.value) || 1;
+    document.getElementById('totalPrice').value = (price * quantity).toFixed(2);
+});
+
+// Update Total Price when Sell Quantity Changes
+document.getElementById('sellQuantity').addEventListener('input', function() {
+    let price = parseFloat(document.getElementById('sellStockPrice').value) || 0;
+    let quantity = parseInt(this.value) || 1;
+    document.getElementById('sellTotalPrice').value = (price * quantity).toFixed(2);
+});
+</script>
+
 <%-- <div class="portfolio-container">
 <div class="data">
  <%
@@ -411,8 +571,6 @@ window.onload = function() {
 };
 </script>
 
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
+
 </body>
 </html>

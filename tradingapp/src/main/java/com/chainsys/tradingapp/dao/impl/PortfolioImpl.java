@@ -31,7 +31,7 @@ public class PortfolioImpl implements PortfolioDAO {
 
     @Override
     public List<Portfolio> getPortfoliosByUserId(int userId) {
-        String query = "SELECT p.portfolio_id, p.user_id, p.stock_id, s.company_name as company, s.symbol as symbol, p.quantity, p.avg_cost, p.total_cost FROM portfolio p JOIN stocks s ON p.stock_id = s.stock_id WHERE p.user_id = ?";
+        String query = "SELECT p.portfolio_id, p.user_id, p.stock_id, s.company_name as company, s.symbol as symbol, p.quantity, p.avg_cost, p.total_cost FROM portfolio p JOIN stocks s ON p.stock_id = s.stock_id WHERE p.user_id = ? order by total_cost desc;";
         return jdbcTemplate.query(query,  new PortfolioRowMapper(),userId);
     }
     @Override

@@ -592,30 +592,31 @@ button:hover {
 
 					<!-- Add Money Form -->
 					<div class="form-popup-bg" id="addMoneyPopup">
-    <div class="form-container">
-        <span class="close-button" id="btnCloseAddMoneyForm">&times;</span>
-        <h1>Add Money</h1>
-        <form action="addMoney" method="post">
-            <input type="hidden" name="userId" value="<%=user.getId()%>">
-            <div class="form-group">
-                <label for="amount">Amount:</label>
-                <input type="number" id="amount" name="amount" min="1" max="100000" class="form-control" required>
-            </div>
-            <div class="form-group">
-                <label for="cardNumber">Card Number:</label>
-                <input type="text" id="cardNumber" name="cardNumber" maxlength="16" class="form-control" required>
-            </div>
-            <div class="form-group">
-                <label for="expiry">Expiry Date (MM/YYYY):</label>
-                <input type="text" id="expiry" name="expiry" pattern="(0[1-9]|1[0-2])\/[0-9]{4}" placeholder="MM/YYYY" class="form-control" required>
-            </div>
-            <div class="form-group">
-                <label for="cvv">CVV:</label>
-                <input type="text" id="cvv" name="cvv" maxlength="3" class="form-control" required>
-            </div>
-            <button type="submit">Add Money</button>
-        </form>
-    </div>
+  <div class="form-container">
+    <span class="close-button" id="btnCloseAddMoneyForm">&times;</span>
+    <h1>Add Money</h1>
+    <form action="addMoney" method="post">
+        <input type="hidden" name="userId" value="<%=user.getId()%>">
+        <div class="form-group">
+            <label for="amount">Amount:</label>
+            <input type="number" id="amount" name="amount" min="1" max="100000" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="cardNumber">Card Number:</label>
+            <input type="text" id="cardNumber" name="cardNumber" maxlength="16" pattern="\d{16}" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="expiry">Expiry Date (MM/YYYY):</label>
+            <input type="text" id="expiry" name="expiry" pattern="(0[1-9]|1[0-2])\/[0-9]{4}" placeholder="MM/YYYY" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="cvv">CVV:</label>
+            <input type="text" id="cvv" name="cvv" maxlength="3" pattern="\d{3}" class="form-control" required>
+        </div>
+        <button type="submit">Add Money</button>
+    </form>
+</div>
+
 </div>
 
 

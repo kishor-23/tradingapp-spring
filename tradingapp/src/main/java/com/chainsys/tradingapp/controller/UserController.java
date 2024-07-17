@@ -28,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.chainsys.tradingapp.dao.UserDAO;
 import com.chainsys.tradingapp.dao.impl.UserImpl;
+import com.chainsys.tradingapp.exception.PanCardDulipateException;
 import com.chainsys.tradingapp.model.User;
 import com.chainsys.tradingapp.util.EmailService;
 import com.chainsys.tradingapp.util.PasswordHashing;
@@ -169,6 +170,8 @@ public class UserController {
                 emailService.sendWelcomeEmail(user.getEmail(), "Welcome to ChainTrade!");
                 return "redirect:/login?registered=true";
             } catch (DuplicateKeyException e) {
+                   //   throw new PanCardDulipateException("pan already exists");
+
                 model.addAttribute(ERROR_MSG, "Registration failed. User with this PAN card already exists.");
                 return REGISTER_PAGE;
             }
@@ -177,6 +180,7 @@ public class UserController {
             return REGISTER_PAGE;
         }
     }
+
 
     @GetMapping("/login")
     public String showLoginForm() {
@@ -236,11 +240,9 @@ public class UserController {
                 e.printStackTrace();
             }
         }
-
         userOperations.updateUserProfilePicture(userId, profilePicture);
         return PROFILE_PAGE;
     }
-    
     @GetMapping("/profilePicture")
     public void getProfilePicture(@RequestParam("userId") int userId, HttpServletResponse response) {
         try {
