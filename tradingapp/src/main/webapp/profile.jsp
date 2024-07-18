@@ -807,7 +807,7 @@ $(document).ready(function() {
     function openProfilePicturePopup() {
       var profilePicturePopup = document.getElementById("profilePicturePopup");
       var profilePictureImg = document.getElementById("profilePictureImg");
-      profilePictureImg.src = "ProfilePictureServlet?userId=<%=user.getId()%>"; // Set the source of the profile picture
+      profilePictureImg.src = "/profilePicture?userId=<%=user.getId()%>"; // Set the source of the profile picture
       profilePicturePopup.style.display = "block";
     }
 

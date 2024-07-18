@@ -10,11 +10,14 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 
     <link rel="icon" href="assets/favicon.svg" type="image/x-icon">
-    <link rel="stylesheet" href="style/navbar.css">
+    <link rel="stylesheet" href="style/home.css">
+        <link rel="stylesheet" href="style/navbar.css">
+    
     <script src="https://www.gstatic.com/charts/loader.js"></script>
 </head>
 <body>
     <style>
+    
           * { 
     margin: 0; 
     padding: 0; 
@@ -45,11 +48,7 @@ a {
     align-items: center;
 }
 
-   html, body {
-    height: 100%; 
- margin: 0;
-    padding: 0;
-}
+  
     </style>
    <header>
         <div style="display: flex; justify-content: center; font-size:2px">

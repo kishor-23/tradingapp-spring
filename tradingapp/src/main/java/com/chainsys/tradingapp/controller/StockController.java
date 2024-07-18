@@ -28,8 +28,8 @@ public class StockController {
     }
 
     @GetMapping("/stockDetail")
-    public String getStockDetail(@RequestParam("symbol") String symbol, Model model) {
-        model.addAttribute(SYMBOL , symbol);
+    public String getStockDetail(@RequestParam("stockid")  Integer stockid, Model model) {
+        model.addAttribute("stockid" , stockid);
         return "viewstocks.jsp";
     }
 

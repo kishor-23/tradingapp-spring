@@ -1,5 +1,27 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
+	<%@ page import="com.chainsys.tradingapp.model.*" %>
+	<%@ page import="org.springframework.context.ApplicationContext"%>
+<%@ page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
+<%@ page import="jakarta.servlet.http.HttpSession"%>
+<%@ page import="java.util.*"%>
+<%@ page import="com.chainsys.tradingapp.model.*"%>
+<%@ page import="com.chainsys.tradingapp.dao.impl.*"%>
+<%@ page import="com.chainsys.tradingapp.dao.*"%>
+<%
+    if (session == null || session.getAttribute("user") == null) {
+        response.sendRedirect("login.jsp");
+        return;
+    }
+
+    response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); 
+    response.setHeader("Pragma", "no-cache"); 
+    response.setHeader("Expires", "0"); 
+    ApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
+    User user = (User) session.getAttribute("user");
+    StockDAO stockOperations = (StockDAO) context.getBean("stockImpl");
+
+%>
 <!DOCTYPE html>
 <html lang="en" data-theme="light" data-pagefind-ignore="all">
 <head>
@@ -375,7 +397,10 @@ button[data-astro-cid-xwynydrv].stvb-base.stvb-secondary,
 }
 </style>
 	<%
-	String symbol = (String) request.getAttribute("symbol");
+	int stockid = (int) request.getAttribute("stockid");
+	Stock stock= stockOperations.getStockDetailsById(stockid);
+	String symbol=stock.getSymbol();
+	
 	%>
 	<main>
 		<section id="symbol-info">
@@ -394,6 +419,25 @@ button[data-astro-cid-xwynydrv].stvb-base.stvb-secondary,
                      }
                 </script>
 			</div>
+			 <div class="d-flex justify-content-end p-2">
+    <div  class="mr-2">
+        <button class="btn btn-success" data-toggle="modal" data-target="#buyModal" 
+                data-symbol="<%= symbol %>" 
+                data-price="<%= stock.getCurrentStockPrice() %>"
+                data-stock-id="<%= stock.getStockId() %>">
+            Buy
+        </button>
+    </div>
+    <div>
+        <button class="btn btn-danger" data-toggle="modal" data-target="#sellModal" 
+                data-symbol="<%= stock.getSymbol() %>" 
+                data-price="<%= stock.getCurrentStockPrice() %>"
+                data-stock-id="<%= stock.getStockId() %>">
+            Sell
+        </button>
+    </div>
+</div>
+
 			<!-- TradingView Widget END -->
 		</section>
 		<section id="advanced-chart">
@@ -569,5 +613,150 @@ button[data-astro-cid-xwynydrv].stvb-base.stvb-secondary,
 			</p>
 		</section>
 	</main>
+	
+	
+	
+	<!-- Buy Modal -->
+<div class="modal fade" id="buyModal" tabindex="-1" role="dialog" aria-labelledby="buyModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form action="StockTransaction" method="post">
+              <input type="hidden" name="transactionType" value="buy">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="buyModalLabel">Buy Stock</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group mb-3">
+                        <label for="stockSymbol" class="font-weight-bold">Stock Symbol</label>
+                        <input type="text" class="form-control" id="stockSymbol" name="symbol" readonly>
+                    </div>
+                    <div class="form-group mb-3">
+                        <input type="hidden" class="form-control" id="stockId" name="stockId" readonly>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="userid" class="font-weight-bold">User ID</label>
+                        <input type="number" class="form-control" id="userid" value="<%= user.getId() %>" name="userid" readonly>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="stockPrice" class="font-weight-bold">Current Price</label>
+                        <input type="text" class="form-control" id="stockPrice" name="price" readonly>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="quantity" class="font-weight-bold">Quantity</label>
+                        <input type="number" class="form-control" id="quantity" name="quantity" min="1" max="10" value="1" required>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="totalPrice" class="font-weight-bold">Total Price</label>
+                        <input type="text" class="form-control" id="totalPrice" name="totalPrice" readonly>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Buy</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Sell Modal -->
+<div class="modal fade" id="sellModal" tabindex="-1" role="dialog" aria-labelledby="sellModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form action="StockTransaction" method="post">
+            <input type="hidden" name="transactionType" value="sell">
+            
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="sellModalLabel">Sell Stock</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group mb-3">
+                        <label for="sellStockSymbol" class="font-weight-bold">Stock Symbol</label>
+                        <input type="text" class="form-control" id="sellStockSymbol" name="symbol" readonly>
+                    </div>
+                    <div class="form-group mb-3">
+                        <input type="hidden" class="form-control" id="sellStockId" name="stockId" readonly>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="sellUserId" class="font-weight-bold">User ID</label>
+                        <input type="number" class="form-control" id="sellUserId" value="<%= user.getId() %>" name="userid" readonly>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="sellStockPrice" class="font-weight-bold">Current Price</label>
+                        <input type="text" class="form-control" id="sellStockPrice" name="price" readonly>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="sellQuantity" class="font-weight-bold">Quantity</label>
+                        <input type="number" class="form-control" id="sellQuantity" name="quantity" min="1" max="10" value="1" required>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="sellTotalPrice" class="font-weight-bold">Total Price</label>
+                        <input type="text" class="form-control" id="sellTotalPrice" name="totalPrice" readonly>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-danger">Sell</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+
+
+
+
+// Handle Buy Button Click
+$('#buyModal').on('show.bs.modal', function (event) {
+    let button = $(event.relatedTarget);
+    let symbol = button.data('symbol');
+    let price = button.data('price');
+    let stockId = button.data('stock-id');
+    let modal = $(this);
+    modal.find('.modal-body #stockSymbol').val(symbol);
+    modal.find('.modal-body #stockPrice').val(price);
+    modal.find('.modal-body #quantity').val(1);
+    modal.find('.modal-body #totalPrice').val(price);
+    modal.find('.modal-body #stockId').val(stockId);
+});
+// Handle Sell Button Click
+$('#sellModal').on('show.bs.modal', function (event) {
+    let button = $(event.relatedTarget);
+    let symbol = button.data('symbol');
+    let price = button.data('price');
+    let stockId = button.data('stock-id');
+    let modal = $(this);
+    modal.find('.modal-body #sellStockSymbol').val(symbol);
+    modal.find('.modal-body #sellStockPrice').val(price);
+    modal.find('.modal-body #sellQuantity').val(1);
+    modal.find('.modal-body #sellTotalPrice').val(price);
+    modal.find('.modal-body #sellStockId').val(stockId);
+});
+
+// Update Total Price when Buy Quantity Changes
+document.getElementById('quantity').addEventListener('input', function() {
+    let price = parseFloat(document.getElementById('stockPrice').value) || 0;
+    let quantity = parseInt(this.value) || 1;
+    document.getElementById('totalPrice').value = (price * quantity).toFixed(2);
+});
+
+// Update Total Price when Sell Quantity Changes
+document.getElementById('sellQuantity').addEventListener('input', function() {
+    let price = parseFloat(document.getElementById('sellStockPrice').value) || 0;
+    let quantity = parseInt(this.value) || 1;
+    document.getElementById('sellTotalPrice').value = (price * quantity).toFixed(2);
+});
+</script>
 </body>
 </html>

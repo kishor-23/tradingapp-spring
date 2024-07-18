@@ -5,9 +5,7 @@
 body{
     background-image: url("");
 
-    /* font-family: 'Open Sans', sans-serif; */
     background-color: #2b06c1;
-     /* outline: none; */
   font-family: 'Poppins', sans-serif;
 
 
@@ -15,9 +13,7 @@ body{
 
 }
 .logo{
-    /* color: var(--white); */
     font-size: 1.5rem;
-    /* font-weight: var(--fw-700); */
     display: flex;
     align-items: center;
     gap: 5px;
@@ -48,7 +44,6 @@ body{
     padding: 20px 20px 20px 20px;
     font-size: 20px;
     border-radius: 10px ;
-    /* border: 1px solid black; */
 
 }
 
@@ -138,7 +133,6 @@ button:hover{
   position:absolute;
   top:28%;
   right: 4%;
-  /* font-size: 48px; */
   cursor: pointer;
 
 }
@@ -146,7 +140,6 @@ button:hover{
   position:absolute;
   top:28%;
   right: 4%;
-  /* font-size: 48px; */
   cursor: pointer;
 
 }
@@ -155,10 +148,8 @@ button:hover{
   top:50%;
  bottom: 4%;
   right: 4%;
-  /* font-size: 48px; */
   cursor: pointer; 
   position: absolute;
-  /* top: 50%; */
   transform: translateY(-50%);
   color: #595757;
   font-size: 23px;
@@ -174,8 +165,6 @@ button:hover{
   display: inline-block;
   padding: 10px 20px;
   cursor: pointer;
- /* background-color: #4CAF50;  Green background */
- /* color: white;  White text */
   border: .5px solid #63707E; /* Green border */
   border-radius: 4px; /* Rounded corners */
   font-size: 16px; /* Larger text */
@@ -211,8 +200,6 @@ button:hover{
         color:black;
         padding: 20px 20px 20px 20px;
         font-size: 15px;
-        /* border-radius: 30px ; */
-        /* border: 1px solid black; */
         
     }
     .regformf{
@@ -224,7 +211,6 @@ button:hover{
         color:black;
         padding: 20px 20px 20px 20px;
         font-size: 15px;
-        /* border-radius: 30px ; */
         /* border: 1px solid black; */
         
 

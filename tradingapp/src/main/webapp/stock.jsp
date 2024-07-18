@@ -147,9 +147,10 @@ header[data-astro-cid-rafkve5z] {
  
  <script>
  
- function redirectToStockDetail(symbol) {
-     window.location.href = '/stockDetail?symbol=' + symbol;
- }
+ function redirectToStockDetail(stockid) {
+	    window.location.href = '/stockDetail?stockid=' + stockid;
+	}
+
  function sortTable(field) {
 	    let sortOrder = '${sortOrder}';
 	    // Toggle sort order
@@ -164,8 +165,8 @@ header[data-astro-cid-rafkve5z] {
 
 <%-- The table row --%>
   <tr class="clickable" >
-                <td onclick="redirectToStockDetail('<%= stock.getSymbol() %>')"><%= stock.getSymbol() %></td>
-                <td onclick="redirectToStockDetail('<%= stock.getSymbol() %>')"><%= stock.getCompanyName() %></td>
+                <td onclick="redirectToStockDetail('<%= stock.getStockId() %>')"><%= stock.getSymbol() %></td>
+                <td onclick="redirectToStockDetail('<%= stock.getStockId() %>')"><%= stock.getCompanyName() %></td>
                 <td ><%= stock.getCurrentStockPrice() %></td>
                 <td><%= stock.getCapCategory() %></td>
                 <td>
